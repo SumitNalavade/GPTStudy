@@ -5,7 +5,8 @@ import NewQuestionInput from "@/components/newQuestionInput";
 const CreatePage: NextPage = () => {
   return (
     <>
-      <div className="flex">
+        <h1 className="font-bold text-3xl w-4/5 m-auto mt-6">Generate A New Study Set</h1>
+      <div className="flex w-4/5 m-auto">
         <div className="flex items-center justify-center my-6 w-full mx-2">
           <div className="bg-gray-100 rounded-lg p-6 flex justify-center items-center w-full">
             <input
