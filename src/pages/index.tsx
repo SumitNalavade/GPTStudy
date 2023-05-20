@@ -1,18 +1,19 @@
 import { NextPage } from "next";
-
-import NewQuestionInput from "@/components/newQuestionInput";
+import Link from "next/link";
 
 const Home: NextPage = () => {
   return (
     <>
-      <div className="flex flex-col items-center justify-center">
-        <h1 className="text-6xl font-bold text-center">GPT Study</h1>
-        <p className="text-xl py-2">Generate study material with the GPT AI</p>
-      </div>
+      <div className="flex flex-col items-center justify-center mt-20">
+        <h1 className="text-8xl font-bold text-center mt-20">GPT Study</h1>
+        <p className="text-2xl py-2">Generate study material with the GPT AI</p>
 
-      <NewQuestionInput />
+        <Link href="/create" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 mt-10 rounded-lg shadow-lg">
+          Create a free study set
+        </Link>
+      </div>
     </>
   );
-}
+};
 
 export default Home;
