@@ -1,11 +1,20 @@
 import { NextPage } from "next";
+import { useState } from "react";
 
 import NewQuestionInput from "@/components/newQuestionInput";
 
 const CreatePage: NextPage = () => {
+  const [numCards, setNumCards] = useState(4);
+
+  const handleAddCard = () => {
+    setNumCards(numCards + 1);
+  };
+
   return (
     <>
-        <h1 className="font-bold text-3xl w-4/5 m-auto mt-6">Generate A New Study Set</h1>
+      <h1 className="font-bold text-3xl w-4/5 m-auto mt-6">
+        Generate A New Study Set
+      </h1>
       <div className="flex w-4/5 m-auto">
         <div className="flex items-center justify-center my-6 w-full mx-2">
           <div className="bg-gray-100 rounded-lg p-6 flex justify-center items-center w-full">
@@ -28,15 +37,17 @@ const CreatePage: NextPage = () => {
         </div>
       </div>
 
-      <NewQuestionInput />
-      <NewQuestionInput />
-      <NewQuestionInput />
+      {Array.from({ length: numCards }, (_, index) => (
+        <NewQuestionInput key={index} />
+      ))}
 
-      <div className="flex items-center justify-center my-6">
+      <button className="flex items-center justify-center my-6 w-full" onClick={handleAddCard}>
         <div className="w-4/5 h-32 bg-gray-100 rounded-lg p-6 flex justify-center items-center">
-          <h2 className="font-medium">+ Add Card</h2>
+          <h2 className="font-medium">
+            + Add Card
+          </h2>
         </div>
-      </div>
+      </button>
     </>
   );
 };
