@@ -39,6 +39,13 @@ const CreatePage: NextPage = () => {
     });
   };
 
+  const handleButtonClicked = async () => {
+    const response = await fetch("/api/hello");
+    const apiData = await response.json();
+
+    console.log(apiData);
+  }
+
   return (
     <>
       <p className="font-bold text-3xl w-4/5 m-auto mt-6">
@@ -93,7 +100,7 @@ const CreatePage: NextPage = () => {
 
       <div className="flex items-center justify-center w-full">
         <div className="w-4/5 mb-4 rounded-lg flex justify-end items-center">
-          <button className="bg-blue-500 text-white rounded-md py-2 px-4">
+          <button className="bg-blue-500 text-white rounded-md py-2 px-4" onClick={handleButtonClicked}>
             Generate Practice Questions
           </button>
         </div>
