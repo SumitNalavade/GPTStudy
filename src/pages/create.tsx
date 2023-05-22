@@ -1,12 +1,14 @@
 import { NextPage } from "next";
 import { useState } from "react";
-import axios from "axios";
+import { useRouter } from "next/router";
 
 import NewQuestionInput from "@/components/newQuestionCard";
 
 import { IQuestion } from "@/utils/interfaces";
 
 const CreatePage: NextPage = () => {
+  const router = useRouter();
+
   const [title, setTitle] = useState("");
   const [course, setCourse] = useState("");
   const [numCards, setNumCards] = useState(3);
@@ -14,8 +16,6 @@ const CreatePage: NextPage = () => {
 
   const handleTitleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(evt.target.value);
-
-    console.log(title);
   };
 
   const handleCourseChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,9 +41,10 @@ const CreatePage: NextPage = () => {
   };
 
   const handleButtonClicked = async () => {
-    // const response = (await axios.post("/api/hello", { questions })).data
-
-    // console.log(response);
+    router.push({
+      pathname: "/study",
+      query: { data: JSON.stringify(questions) }
+    })
   };
 
   return (
