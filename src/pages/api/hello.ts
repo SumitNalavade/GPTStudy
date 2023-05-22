@@ -1,15 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { Configuration, OpenAIApi } from "openai";
-
-const configuration = new Configuration({
-  apiKey: process.env.OPENAIAPIKEY,
-});
-
-const openai = new OpenAIApi(configuration);
+import openai from "@/utils/gpt";
+import { IQuestion } from "@/utils/interfaces";
 
 type Data = {
-  name: string;
+  content: string;
 };
 
 export default async function handler(
@@ -17,13 +12,18 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
 
-  let messages = [
-    { role: "user", content: "what is the least abundant element on earth" }
-  ]
+  const { questions } = req.body
+
+  const messages = questions.flatMap((question: IQuestion) => [
+    { role: "user", content: question.question },
+    { role: "assistant", content: question.answer }
+  ]);
+  
+  messages.push({ role: "user", content: "Create a set of 5 questions similar to these" })
 
   const chatGPT = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
-    messages: messages.map((message) => ({
+    messages: messages.map((message: any) => ({
       role: message.role as 'system' | 'user' | 'assistant',
       content: message.content,
     }))
@@ -31,7 +31,5 @@ export default async function handler(
 
   const chatGPTMessage = chatGPT.data.choices[0].message;
 
-  console.log(chatGPTMessage);
-  
-  res.status(200).json({ name: process.env.OPENAIAPIKEY as string });
+  res.status(200).json({ content: chatGPTMessage!.content });
 }

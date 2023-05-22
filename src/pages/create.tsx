@@ -1,5 +1,6 @@
 import { NextPage } from "next";
 import { useState } from "react";
+import axios from "axios";
 
 import NewQuestionInput from "@/components/newQuestionCard";
 
@@ -21,7 +22,7 @@ const CreatePage: NextPage = () => {
     setCourse(evt.target.value);
   };
 
-  const handleAddCard = () => {
+  const handleAddCard = async () => {
     setNumCards(numCards + 1);
   };
 
@@ -40,11 +41,10 @@ const CreatePage: NextPage = () => {
   };
 
   const handleButtonClicked = async () => {
-    const response = await fetch("/api/hello");
-    const apiData = await response.json();
+    // const response = (await axios.post("/api/hello", { questions })).data
 
-    console.log(apiData);
-  }
+    // console.log(response);
+  };
 
   return (
     <>
@@ -100,7 +100,10 @@ const CreatePage: NextPage = () => {
 
       <div className="flex items-center justify-center w-full">
         <div className="w-4/5 mb-4 rounded-lg flex justify-end items-center">
-          <button className="bg-blue-500 text-white rounded-md py-2 px-4" onClick={handleButtonClicked}>
+          <button
+            className="bg-blue-500 text-white rounded-md py-2 px-4"
+            onClick={handleButtonClicked}
+          >
             Generate Practice Questions
           </button>
         </div>
