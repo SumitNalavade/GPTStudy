@@ -4,13 +4,16 @@ import openai from "@/utils/gpt";
 
 import { IQuestion } from "@/utils/interfaces";
 
+import QuestionCard from "@/components/questionCard";
+
 interface Props {
-  questions: { question: string; answer: string }[];
+  questions: IQuestion[];
   title: string;
   course: string;
 }
 
 const StudyPage: NextPage<Props> = ({ questions, title, course }) => {
+  const [displayQuestion, setDisplayQuestion] = useState(true);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   const handleButtonClicked = (type: string) => {
@@ -21,21 +24,26 @@ const StudyPage: NextPage<Props> = ({ questions, title, course }) => {
     return setCurrentQuestionIndex(currentQuestionIndex - 1);
   };
 
+  const handleCardFlip = () => {
+    setDisplayQuestion(!displayQuestion);
+  };
+
   return (
     <>
-      <p className="font-bold text-3xl w-1/2 m-auto mt-6">{title}</p>
-      <p className="text-lg w-1/2 m-auto ">{course}</p>
-      <div className="flex flex-col items-center mt-12">
-        {/* <button
-          className="disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 bg-gray-300 text-gray-700 text-sm font-semibold rounded-lg mx-2"
-          disabled={currentQuestionIndex === 0}
-          onClick={() => handleButtonClicked("previous")}
+      <div className="flex flex-col items-center mt-12 h-full justify-center">
+        <p className="font-bold text-4xl w-1/2">{title}</p>
+        <p className="text-lg w-1/2 mb-4">{course}</p>
+
+        <div
+          className="w-1/2 h-96 rounded-xl bg-gray-100 cursor-pointer"
+          onClick={handleCardFlip}
         >
-          Previous
-        </button> */}
-        <div className="w-1/2 h-96 rounded-xl bg-gray-100">
-          <div className="flex items-center text-gray-600 text-2xl text-center h-full p-8">
-            {questions[currentQuestionIndex].question}
+          <div className="flex items-center text-gray-600 text-2xl text-center h-full p-8 justify-center">
+            {displayQuestion ? (
+              <p>{questions[currentQuestionIndex].question}</p>
+            ) : (
+              <p>{questions[currentQuestionIndex].answer}</p>
+            )}
           </div>
         </div>
 
@@ -59,7 +67,9 @@ const StudyPage: NextPage<Props> = ({ questions, title, course }) => {
             </svg>
           </button>
 
-          <p className="font-medium text-lg">{currentQuestionIndex + 1}/{questions.length}</p>
+          <p className="font-medium text-lg">
+            {currentQuestionIndex + 1}/{questions.length}
+          </p>
 
           <button
             className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -81,13 +91,11 @@ const StudyPage: NextPage<Props> = ({ questions, title, course }) => {
           </button>
         </div>
 
-        {/* <button
-          className="disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 bg-gray-300 text-gray-700 text-sm font-semibold rounded-lg mx-2"
-          disabled={currentQuestionIndex === questions.length - 1}
-          onClick={() => handleButtonClicked("next")}
-        >
-          Next
-        </button> */}
+        <div className="w-1/2 mt-20">
+          {questions.map((question, index) => (
+            <QuestionCard question={question} key={index} />
+          ))}
+        </div>
       </div>
     </>
   );
