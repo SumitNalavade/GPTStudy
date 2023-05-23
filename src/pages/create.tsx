@@ -43,7 +43,7 @@ const CreatePage: NextPage = () => {
   const handleButtonClicked = async () => {
     router.push({
       pathname: "/study",
-      query: { data: JSON.stringify(questions) }
+      query: { data: JSON.stringify(questions), title, course }
     })
   };
 
