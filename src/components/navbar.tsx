@@ -7,27 +7,10 @@ const Navbar: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            <Link href="/" className="text-white font-bold text-lg">Logo</Link>
+            <Link href="/" className="text-white font-bold text-lg">GPTStudy</Link>
           </div>
           <div className="flex items-center">
-            <a
-              className="text-white hover:text-gray-200 px-3 py-2 rounded-md"
-              href="#"
-            >
-              Home
-            </a>
-            <a
-              className="text-white hover:text-gray-200 px-3 py-2 rounded-md"
-              href="#"
-            >
-              About
-            </a>
-            <a
-              className="text-white hover:text-gray-200 px-3 py-2 rounded-md"
-              href="#"
-            >
-              Contact
-            </a>
+            
           </div>
         </div>
       </div>
