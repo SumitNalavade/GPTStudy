@@ -102,53 +102,40 @@ const StudyPage: NextPage<Props> = ({ questions, title, course }) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-  const { title, course } = query;
+  const questionsArray = JSON.parse(query.data as string);
 
-  const apiResponse =
-    "1. Find the volume of the solid obtained by rotating the region bounded by the curve y = x^2 - 4x + 4 and the x-axis about the y-axis.\n  Answer: 128π/15\n\n  2. Find the area between the curves y = x^3 and y = x for x in [0, 1].\n  Answer: 1/4\n\n  3. What is the value of integral from 0 to 1 of (x ln x) dx?\n  Answer: -1/4\n\n  4. Find the volume of the solid obtained by rotating the region bounded by the curve y = x and the lines y = 0, x = 1, x = 2 about the x-axis.\n  Answer: (π/2)\n\n  5. Evaluate the integral from 0 to π of sin(2x)cos(3x) dx.\n  Answer: 0";
+  const promiseArray = questionsArray.map((prompt: IQuestion) =>
+    openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      messages: [
+        { role: "user", content: prompt.question },
+        { role: "assistant", content: prompt.answer },
+        {
+          role: "user",
+          content: "Create a similar question and answer to this",
+        },
+      ],
+    })
+  );
 
-  const questionsArray = apiResponse.split("\n\n").map((item) => {
-    const [question, answer] = item.split("  Answer: ");
-    return { question: question.trim(), answer: answer.trim() };
+  const gptResponse = await Promise.all(promiseArray).then((res) =>
+    res.map((elm) => elm.data.choices[0].message?.content)
+  );
+
+  const questions = gptResponse.map((elm) => {
+    const [question, answer] = elm.split("\n\n");
+
+    return {
+      question,
+      answer,
+    };
   });
 
   return {
     props: {
-      questions: questionsArray,
-      title,
-      course,
+      questions: questions,
     },
   };
-
-  //   const questionsArray = JSON.parse(query.data as string);
-
-  //   const messages = questionsArray.flatMap((question: IQuestion) => [
-  //     { role: "user", content: question.question },
-  //     { role: "assistant", content: question.answer }
-  //   ]);
-
-  //   messages.push({ role: "user", content: "Create a set of 5 questions similar to these with answers" })
-
-  //   const chatGPT = await openai.createChatCompletion({
-  //     model: "gpt-3.5-turbo",
-  //     messages: messages.map((message: any) => ({
-  //       role: message.role as 'system' | 'user' | 'assistant',
-  //       content: message.content,
-  //     }))
-  //   })
-
-  //   const chatGPTMessage = chatGPT.data.choices[0].message?.content;
-
-  //   const questions = chatGPTMessage!.split("\n\n").map((item) => {
-  //           const [question, answer] = item.split("  Answer: ");
-  //           return { question: question.trim(), answer: answer.trim() };
-  //         });
-
-  //   return {
-  //     props: {
-  //       questions,
-  //     },
-  //   };
 };
 
 export default StudyPage;

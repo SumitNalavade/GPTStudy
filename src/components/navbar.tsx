@@ -15,7 +15,7 @@ const Navbar: React.FC = () => {
             <Link href="/" className="text-white font-bold text-lg">GPTStudy</Link>
           </div>
           <div className="flex items-center">
-            <Link href="/auth" className="rounded-full text-white p-2 flex items-center justify-center">
+            <Link href={ user ? "/user" : "/auth" } className="rounded-full text-white p-2 flex items-center justify-center">
               <img src={user?.photoURL as string} alt="Profile Picture" className="w-10 h-10 rounded-full" />
             </Link>
           </div>
