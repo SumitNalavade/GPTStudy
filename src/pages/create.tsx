@@ -1,12 +1,18 @@
 import { NextPage } from "next";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { getAuth } from "firebase/auth";
+import { collection, addDoc } from "firebase/firestore";
+import axios from "axios";
 
+import { db } from "@/utils/firebaseConfig";
 import NewQuestionInput from "@/components/newQuestionCard";
 
 import { IQuestion } from "@/utils/interfaces";
 
 const CreatePage: NextPage = () => {
+  const auth = getAuth();
+  const currentUser = auth.currentUser;
   const router = useRouter();
 
   const [title, setTitle] = useState("");
@@ -41,9 +47,18 @@ const CreatePage: NextPage = () => {
   };
 
   const handleButtonClicked = async () => {
+    const apiResponse = (await axios.post("/api/generate", { questionsArray: questions })).data;
+
+    const docRef = await addDoc(collection(db, "studySets"), {
+      questions: apiResponse.questions,
+      title,
+      course,
+      user: currentUser?.uid,
+    });
+    
     router.push({
       pathname: "/study",
-      query: { data: JSON.stringify(questions), title, course }
+      query: { studySetId: docRef.id }
     })
   };
 

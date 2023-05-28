@@ -1,18 +1,19 @@
-import '@/styles/globals.css'
-import type { AppProps } from 'next/app'
+import "@/styles/globals.css";
+import type { AppProps } from "next/app";
+import { useEffect } from "react";
 
-import { initializeApp } from "firebase/app";
-import firebaseConfig from '../utils/firebaseConfig';
+import app from "../utils/firebaseConfig";
 
-import Container from "@/components/container"
+import Container from "@/components/container";
 
 export default function App({ Component, pageProps }: AppProps) {
-
-  initializeApp(firebaseConfig);
+  useEffect(() => {
+    console.log(app);
+  }, []);
 
   return (
     <Container>
       <Component {...pageProps} />
     </Container>
-  )
+  );
 }

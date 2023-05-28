@@ -1,7 +1,9 @@
 import { NextPage, GetServerSideProps } from "next";
-import { useState } from "react";
-import openai from "@/utils/gpt";
+import { useState, useEffect } from "react";
+import { getAuth } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 
+import { db } from "@/utils/firebaseConfig";
 import { IQuestion } from "@/utils/interfaces";
 
 import QuestionCard from "@/components/questionCard";
@@ -13,6 +15,9 @@ interface Props {
 }
 
 const StudyPage: NextPage<Props> = ({ questions, title, course }) => {
+  const auth = getAuth();
+  const currentUser = auth.currentUser;
+
   const [displayQuestion, setDisplayQuestion] = useState(true);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
@@ -102,68 +107,32 @@ const StudyPage: NextPage<Props> = ({ questions, title, course }) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-  const questions = [
-    {
-      question: 'Question: What is the capital city of France?',
-      answer: 'The capital city of France is Paris.'
-    },
-    {
-      question: 'Question: What is the capital of California?',
-      answer: 'Sacramento'
-    }
-  ]
+  const { studySetId } = query;
+
+  const docRef = doc(db, "studySets", studySetId as string);
+  const docSnap = await getDoc(docRef);
+
+  // @ts-ignore
+  const { questions, title, course } = docSnap.data();
+
+  // const questions = [
+  //   {
+  //     question: "Question: What is the capital city of France?",
+  //     answer: "The capital city of France is Paris.",
+  //   },
+  //   {
+  //     question: "Question: What is the capital of California?",
+  //     answer: "Sacramento",
+  //   },
+  // ];
 
   return {
     props: {
-      questions
-    }
-  }
-
-  // const questionsArray = JSON.parse(query.data as string);
-
-  // const questionsPromiseArray = questionsArray.map((prompt: IQuestion) =>
-  //   openai.createChatCompletion({
-  //     model: "gpt-3.5-turbo",
-  //     messages: [
-  //       { role: "user", content: prompt.question },
-  //       { role: "assistant", content: prompt.answer },
-  //       {
-  //         role: "user",
-  //         content: "Create a similar question without the answer to this",
-  //       },
-  //     ],
-  //   })
-  // );
-
-  // const questions = await Promise.all(questionsPromiseArray).then((res) =>
-  //   res.map((elm) => elm.data.choices[0].message?.content)
-  // );
-
-  // const answersPromiseArray = questions.map((question: string) =>
-  //   openai.createChatCompletion({
-  //     model: "gpt-3.5-turbo",
-  //     messages: [
-  //       { role: "user", content: question },
-  //     ],
-  //   })
-  // );
-
-  // const answers = await Promise.all(answersPromiseArray).then((res) =>
-  //   res.map((elm) => elm.data.choices[0].message?.content)
-  // );
-
-  // const combinedArray = questions.map((question, index) => {
-  //   return {
-  //     question,
-  //     answer: answers[index]
-  //   };
-  // });
-
-  // return {
-  //   props: {
-  //     questions: combinedArray,
-  //   },
-  // };
+      questions,
+      title,
+      course
+    },
+  };
 };
 
 export default StudyPage;
