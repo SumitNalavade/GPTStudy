@@ -63,7 +63,7 @@ const StudyPage: NextPage<Props> = ({ questions, title, course }) => {
               strokeLinejoin="round"
               className="w-6 h-6"
             >
-              <path d="M5 12h13M12 5l7 7-7 7" />
+              <path d="M19 12H6M12 5l-7 7 7 7" />
             </svg>
           </button>
 
@@ -102,40 +102,68 @@ const StudyPage: NextPage<Props> = ({ questions, title, course }) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-  const questionsArray = JSON.parse(query.data as string);
-
-  const promiseArray = questionsArray.map((prompt: IQuestion) =>
-    openai.createChatCompletion({
-      model: "gpt-3.5-turbo",
-      messages: [
-        { role: "user", content: prompt.question },
-        { role: "assistant", content: prompt.answer },
-        {
-          role: "user",
-          content: "Create a similar question and answer to this",
-        },
-      ],
-    })
-  );
-
-  const gptResponse = await Promise.all(promiseArray).then((res) =>
-    res.map((elm) => elm.data.choices[0].message?.content)
-  );
-
-  const questions = gptResponse.map((elm) => {
-    const [question, answer] = elm.split("\n\n");
-
-    return {
-      question,
-      answer,
-    };
-  });
+  const questions = [
+    {
+      question: 'Question: What is the capital city of France?',
+      answer: 'The capital city of France is Paris.'
+    },
+    {
+      question: 'Question: What is the capital of California?',
+      answer: 'Sacramento'
+    }
+  ]
 
   return {
     props: {
-      questions: questions,
-    },
-  };
+      questions
+    }
+  }
+
+  // const questionsArray = JSON.parse(query.data as string);
+
+  // const questionsPromiseArray = questionsArray.map((prompt: IQuestion) =>
+  //   openai.createChatCompletion({
+  //     model: "gpt-3.5-turbo",
+  //     messages: [
+  //       { role: "user", content: prompt.question },
+  //       { role: "assistant", content: prompt.answer },
+  //       {
+  //         role: "user",
+  //         content: "Create a similar question without the answer to this",
+  //       },
+  //     ],
+  //   })
+  // );
+
+  // const questions = await Promise.all(questionsPromiseArray).then((res) =>
+  //   res.map((elm) => elm.data.choices[0].message?.content)
+  // );
+
+  // const answersPromiseArray = questions.map((question: string) =>
+  //   openai.createChatCompletion({
+  //     model: "gpt-3.5-turbo",
+  //     messages: [
+  //       { role: "user", content: question },
+  //     ],
+  //   })
+  // );
+
+  // const answers = await Promise.all(answersPromiseArray).then((res) =>
+  //   res.map((elm) => elm.data.choices[0].message?.content)
+  // );
+
+  // const combinedArray = questions.map((question, index) => {
+  //   return {
+  //     question,
+  //     answer: answers[index]
+  //   };
+  // });
+
+  // return {
+  //   props: {
+  //     questions: combinedArray,
+  //   },
+  // };
 };
 
 export default StudyPage;
