@@ -12,6 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { db } from "@/utils/firebaseConfig";
 import NewQuestionInput from "@/components/newQuestionCard";
 
+import withAuthProtection from "@/components/withAuthProtection";
 import { IQuestion } from "@/utils/interfaces";
 
 const CreatePage: NextPage = () => {
@@ -138,4 +139,4 @@ const CreatePage: NextPage = () => {
   );
 };
 
-export default CreatePage;
+export default withAuthProtection(CreatePage);
