@@ -47,10 +47,22 @@ const CreatePage: NextPage = () => {
   };
 
   const handleButtonClicked = async () => {
-    const apiResponse = (await axios.post("/api/generate", { questionsArray: questions })).data;
+    // const apiResponse = (await axios.post("/api/generate", { questionsArray: questions })).data;
+
+    const questions = [
+    {
+      question: "Question: What is the capital city of France?",
+      answer: "The capital city of France is Paris.",
+    },
+    {
+      question: "Question: What is the capital of California?",
+      answer: "Sacramento",
+    },
+  ];
 
     const docRef = await addDoc(collection(db, "studySets"), {
-      questions: apiResponse.questions,
+      // questions: apiResponse.questions,
+      questions,
       title,
       course,
       user: currentUser?.uid,

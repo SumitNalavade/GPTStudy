@@ -115,17 +115,6 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   // @ts-ignore
   const { questions, title, course } = docSnap.data();
 
-  // const questions = [
-  //   {
-  //     question: "Question: What is the capital city of France?",
-  //     answer: "The capital city of France is Paris.",
-  //   },
-  //   {
-  //     question: "Question: What is the capital of California?",
-  //     answer: "Sacramento",
-  //   },
-  // ];
-
   return {
     props: {
       questions,

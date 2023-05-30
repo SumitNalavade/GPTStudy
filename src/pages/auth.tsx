@@ -10,30 +10,64 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 const SignInPage: NextPage = () => {
   const googleProvider = new GoogleAuthProvider();
   const auth = getAuth();
   const router = useRouter();
 
   const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState<undefined | string>();
 
-  const handleEmailChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(evt.target.value);
-  };
+  const loginFormSchema = z.object({
+    email: z.string().email("Invalid Email"),
+    password: z.string().min(1, "Password is required"),
+  });
 
-  const handlePasswordChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(evt.target.value);
-  };
+  type loginFormData = z.infer<typeof loginFormSchema>;
+
+  const {
+    register: registerLogin,
+    handleSubmit: handleLogin,
+    formState: { errors: loginErrors },
+  } = useForm<loginFormData>({ resolver: zodResolver(loginFormSchema) });
+
+  const signUpFormSchema = z
+    .object({
+      email: z.string().email("Invalid Email"),
+      password: z.string().min(1, "Password is required"),
+      confirmPassword: z.string().min(1)
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      path: ["confirmPassword"],
+      message: "Passwords do not match"
+    });
+
+  type signUpFormData = z.infer<typeof signUpFormSchema>;
+
+  const {
+    register: registerSignUp,
+    handleSubmit: handleSignUp,
+    formState: { errors: signUpErrors },
+  } = useForm<signUpFormData>({ resolver: zodResolver(signUpFormSchema) });
 
   const handleChangeButtonClicked = () => {
     setErrorMessage(undefined);
     setIsLogin(!isLogin);
   };
 
-  const handleSignUpButtonClicked = async () => {
+  const handleGoogleAuth = async () => {
+    const userCredentials = await signInWithPopup(auth, googleProvider);
+
+    userCredentials ? router.push("/create") : "";
+  };
+
+  const createUser = async (data: signUpFormData) => {
+    const { email, password } = data
+
     const userCredentials = await createUserWithEmailAndPassword(
       auth,
       email,
@@ -43,7 +77,9 @@ const SignInPage: NextPage = () => {
     userCredentials ? router.push("/create") : "";
   };
 
-  const handleLoginButtonClicked = async () => {
+  const loginUser = async (data: loginFormData) => {
+    const { email, password } = data
+
     const userCredentials = await signInWithEmailAndPassword(
       auth,
       email,
@@ -53,14 +89,8 @@ const SignInPage: NextPage = () => {
     userCredentials ? router.push("/create") : "";
   };
 
-  const handleGoogleAuth = async () => {
-    const userCredentials = await signInWithPopup(auth, googleProvider);
-
-    userCredentials ? router.push("/create") : "";
-  };
-
   const handleError = (error: FirebaseError) => {
-    const code = error.code;
+    const code = error.code; 
 
     switch (code) {
       case "auth/email-already-in-use":
@@ -72,6 +102,10 @@ const SignInPage: NextPage = () => {
         break;
 
       case "auth/wrong-password":
+        setErrorMessage("Invalid username or password");
+        break;
+
+      case "auth/user-not-found":
         setErrorMessage("Invalid username or password");
         break;
 
@@ -92,7 +126,10 @@ const SignInPage: NextPage = () => {
           {errorMessage}
         </p>
 
-        <button className="w-full m-auto my-12 justify-center px-4 py-2 border flex gap-2 border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150" onClick={handleGoogleAuth}>
+        <button
+          className="w-full m-auto my-12 justify-center px-4 py-2 border flex gap-2 border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
+          onClick={handleGoogleAuth}
+        >
           <img
             className="w-6 h-6"
             src="https://www.svgrepo.com/show/475656/google-color.svg"
@@ -102,36 +139,53 @@ const SignInPage: NextPage = () => {
           <span>Login with Google</span>
         </button>
 
-        <input
-          className={`w-full border-b bg-transparent py-2 px-4 focus:outline-none ${
-            errorMessage ? "border-red-500" : ""
-          } focus:border-blue-500 my-6`}
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={handleEmailChange}
-        />
+        <form onSubmit={isLogin ? handleLogin(loginUser) : handleSignUp(createUser)}>
+          <input
+            className={`w-full border-b bg-transparent py-2 px-4 focus:outline-none ${
+              errorMessage ? "border-red-500" : ""
+            } focus:border-blue-500 my-4`}
+            type="email"
+            placeholder="Email"
+            {...(isLogin ? registerLogin("email") : registerSignUp("email"))}
+          />
+          {loginErrors.email && <span className="text-red-500">{loginErrors.email.message}</span>}
+          {signUpErrors.email && <span className="text-red-500">{signUpErrors.email.message}</span>}
 
-        <input
-          className={`w-full border-b border-gray-300 bg-transparent py-2 px-4 ${
-            errorMessage ? "border-red-500" : ""
-          } focus:outline-none focus:border-blue-500 my-6`}
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={handlePasswordChange}
-        />
+          <input
+            className={`w-full border-b border-gray-300 bg-transparent py-2 px-4 ${
+              errorMessage ? "border-red-500" : ""
+            } focus:outline-none focus:border-blue-500 my-4`}
+            type="password"
+            placeholder="Password"
+            {...(isLogin
+              ? registerLogin("password")
+              : registerSignUp("password"))}
+          />
+          {loginErrors.password && <span className="text-red-500">{loginErrors.password.message}</span>}
+          {signUpErrors.password && (
+            <span className="text-red-500">{signUpErrors.password.message}</span>
+          )}
 
-        <button
-          className="flex items-center justify-center my-6 w-full"
-          onClick={
-            isLogin ? handleLoginButtonClicked : handleSignUpButtonClicked
-          }
-        >
-          <div className="w-4/5 h-16 rounded-lg p-6 flex justify-center items-center bg-blue-500 text-white">
-            <h2 className="font-medium">{isLogin ? "Log In" : "Sign Up"}</h2>
+          <div className={`${ isLogin ? "hidden" : "" }`}>
+            <input
+              className={`w-full border-b border-gray-300 bg-transparent py-2 px-4 $ ${
+                errorMessage ? "border-red-500" : ""
+              } focus:outline-none focus:border-blue-500 my-4`}
+              type="password"
+              placeholder="Confirm Password"
+              {...(isLogin ? {} : registerSignUp("confirmPassword"))}
+            />
+            {signUpErrors.confirmPassword && (
+              <span className="text-red-500">{signUpErrors.confirmPassword.message}</span>
+            )}
           </div>
-        </button>
+
+          <button className={`flex items-center justify-center my-6 w-full`}>
+            <div className="w-4/5 h-16 rounded-lg p-6 flex justify-center items-center bg-blue-500 text-white">
+              <h2 className="font-medium">{isLogin ? "Log In" : "Sign Up"}</h2>
+            </div>
+          </button>
+        </form>
 
         <button
           className="flex items-center justify-center my-6 w-full"
