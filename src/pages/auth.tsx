@@ -27,13 +27,13 @@ const SignInPage: NextPage = () => {
     password: z.string().min(1, "Password is required"),
   });
 
-  type loginFormData = z.infer<typeof loginFormSchema>;
+  type LoginFormData = z.infer<typeof loginFormSchema>;
 
   const {
     register: registerLogin,
     handleSubmit: handleLogin,
     formState: { errors: loginErrors },
-  } = useForm<loginFormData>({ resolver: zodResolver(loginFormSchema) });
+  } = useForm<LoginFormData>({ resolver: zodResolver(loginFormSchema) });
 
   const signUpFormSchema = z
     .object({
@@ -77,7 +77,7 @@ const SignInPage: NextPage = () => {
     userCredentials ? router.push("/create") : "";
   };
 
-  const loginUser = async (data: loginFormData) => {
+  const loginUser = async (data: LoginFormData) => {
     const { email, password } = data
 
     const userCredentials = await signInWithEmailAndPassword(

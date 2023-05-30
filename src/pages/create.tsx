@@ -5,6 +5,10 @@ import { getAuth } from "firebase/auth";
 import { collection, addDoc } from "firebase/firestore";
 import axios from "axios";
 
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import { db } from "@/utils/firebaseConfig";
 import NewQuestionInput from "@/components/newQuestionCard";
 
@@ -15,22 +19,17 @@ const CreatePage: NextPage = () => {
   const currentUser = auth.currentUser;
   const router = useRouter();
 
-  const [title, setTitle] = useState("");
-  const [course, setCourse] = useState("");
   const [numCards, setNumCards] = useState(3);
   const [questions, setQuestions] = useState<IQuestion[]>([]);
 
-  const handleTitleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(evt.target.value);
-  };
+  const formSchema = z.object({
+    title: z.string().min(1, "Title is required"),
+    course: z.string().min(1, "Course is required"),
+  });
 
-  const handleCourseChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    setCourse(evt.target.value);
-  };
+  type FormData = z.infer<typeof formSchema>;
 
-  const handleAddCard = async () => {
-    setNumCards(numCards + 1);
-  };
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({ resolver: zodResolver(formSchema) })
 
   const handleEditQuestion = (question: IQuestion) => {
     setQuestions((prevQuestions) => {
@@ -46,19 +45,21 @@ const CreatePage: NextPage = () => {
     });
   };
 
-  const handleButtonClicked = async () => {
+  const createStudySet = async (data: FormData) => {
+    const { title, course } = data
+    
     // const apiResponse = (await axios.post("/api/generate", { questionsArray: questions })).data;
 
     const questions = [
-    {
-      question: "Question: What is the capital city of France?",
-      answer: "The capital city of France is Paris.",
-    },
-    {
-      question: "Question: What is the capital of California?",
-      answer: "Sacramento",
-    },
-  ];
+      {
+        question: "Question: What is the capital city of France?",
+        answer: "The capital city of France is Paris.",
+      },
+      {
+        question: "Question: What is the capital of California?",
+        answer: "Sacramento",
+      },
+    ];
 
     const docRef = await addDoc(collection(db, "studySets"), {
       // questions: apiResponse.questions,
@@ -67,40 +68,40 @@ const CreatePage: NextPage = () => {
       course,
       user: currentUser?.uid,
     });
-    
+
     router.push({
       pathname: "/study",
-      query: { studySetId: docRef.id }
-    })
+      query: { studySetId: docRef.id },
+    });
   };
 
   return (
-    <>
+    <form onSubmit={handleSubmit(createStudySet)}> 
       <p className="font-bold text-3xl w-4/5 m-auto mt-6">
         Generate A New Study Set
       </p>
       <div className="flex w-4/5 m-auto">
         <div className="flex items-center justify-center my-6 w-full mx-2">
-          <div className="bg-gray-100 rounded-lg p-6 flex justify-center items-center w-full">
+          <div className="bg-gray-100 rounded-lg p-6 flex flex-col justify-center items-center w-full">
             <input
               className="border-b border-gray-300 bg-transparent py-2 px-4 focus:outline-none focus:border-blue-500 w-full"
               type="text"
               placeholder="Give your set a title"
-              value={title}
-              onChange={handleTitleChange}
+              {...register("title")}
             />
-          </div>
+            { errors.title && <span className="text-red-500 block self-start mt-4">{ errors.title.message }</span> }
+          </div>  
         </div>
 
         <div className="flex items-center justify-center my-6 w-full mx-2">
-          <div className="bg-gray-100 rounded-lg p-6 flex justify-center items-center w-full">
+          <div className="bg-gray-100 flex-col rounded-lg p-6 flex justify-center items-center w-full">
             <input
               className="border-b border-gray-300 bg-transparent py-2 px-4 focus:outline-none focus:border-blue-500 w-full"
               type="text"
               placeholder="Course"
-              value={course}
-              onChange={handleCourseChange}
+              {...register("course")}
             />
+            { errors.course && <span className="text-red-500 self-start mt-4">{ errors.course.message }</span> }
           </div>
         </div>
       </div>
@@ -117,26 +118,23 @@ const CreatePage: NextPage = () => {
         <NewQuestionInput key={index} handleEditQuestion={handleEditQuestion} />
       ))}
 
-      <button
+      <div
         className="flex items-center justify-center my-6 w-full"
-        onClick={handleAddCard}
+        onClick={() => setNumCards(numCards + 1)}
       >
         <div className="w-4/5 h-32 bg-gray-100 rounded-lg p-6 flex justify-center items-center">
           <h2 className="font-medium">+ Add Card</h2>
         </div>
-      </button>
+      </div>
 
       <div className="flex items-center justify-center w-full">
         <div className="w-4/5 mb-4 rounded-lg flex justify-end items-center">
-          <button
-            className="bg-blue-500 text-white rounded-md py-2 px-4"
-            onClick={handleButtonClicked}
-          >
+          <button className="bg-blue-500 text-white rounded-md py-2 px-4">
             Generate Practice Questions
           </button>
         </div>
       </div>
-    </>
+    </form>
   );
 };
 
