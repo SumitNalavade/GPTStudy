@@ -7,10 +7,29 @@ type ResponseData = {
   questions: IQuestion[];
 };
 
+function delay(milliseconds: number): Promise<void> {
+  return new Promise<void>((resolve) => {
+    setTimeout(resolve, milliseconds);
+  });
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ) {
+  
+  await delay(5000)
+  return res.status(200).json({ questions: [
+    {
+      question: "Question: What is the capital city of France?",
+      answer: "The capital city of France is Paris.",
+    },
+    {
+      question: "Question: What is the capital of California?",
+      answer: "Sacramento",
+    },
+  ] });
+
   const { questionsArray } = req.body;
 
   const questionsPromiseArray = questionsArray.map((prompt: IQuestion) =>
@@ -21,7 +40,7 @@ export default async function handler(
         { role: "assistant", content: prompt.answer },
         {
           role: "user",
-          content: "Create a similar question without the answer to this",
+          content: "Create a similar but unique question without the answer to this",
         },
       ],
     })
@@ -34,9 +53,7 @@ export default async function handler(
   const answersPromiseArray = questions.map((question: string) =>
     openai.createChatCompletion({
       model: "gpt-3.5-turbo",
-      messages: [
-        { role: "user", content: question },
-      ],
+      messages: [{ role: "user", content: question }],
     })
   );
 
@@ -47,7 +64,7 @@ export default async function handler(
   const combinedArray = questions.map((question, index) => {
     return {
       question,
-      answer: answers[index]!
+      answer: answers[index]!,
     };
   });
 

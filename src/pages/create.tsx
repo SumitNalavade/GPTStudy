@@ -20,6 +20,7 @@ const CreatePage: NextPage = () => {
   const currentUser = auth.currentUser;
   const router = useRouter();
 
+  const [isLoading, setIsLoading] = useState(false);
   const [numCards, setNumCards] = useState(3);
   const [questions, setQuestions] = useState<IQuestion[]>([]);
 
@@ -30,7 +31,11 @@ const CreatePage: NextPage = () => {
 
   type FormData = z.infer<typeof formSchema>;
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({ resolver: zodResolver(formSchema) })
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({ resolver: zodResolver(formSchema) });
 
   const handleEditQuestion = (question: IQuestion) => {
     setQuestions((prevQuestions) => {
@@ -47,28 +52,22 @@ const CreatePage: NextPage = () => {
   };
 
   const createStudySet = async (data: FormData) => {
-    const { title, course } = data
-    
-    // const apiResponse = (await axios.post("/api/generate", { questionsArray: questions })).data;
+    setIsLoading(true);
 
-    const questions = [
-      {
-        question: "Question: What is the capital city of France?",
-        answer: "The capital city of France is Paris.",
-      },
-      {
-        question: "Question: What is the capital of California?",
-        answer: "Sacramento",
-      },
-    ];
+    const { title, course } = data;
+
+    const apiResponse = (
+      await axios.post("/api/generate", { questionsArray: questions })
+    ).data;
 
     const docRef = await addDoc(collection(db, "studySets"), {
-      // questions: apiResponse.questions,
-      questions,
+      questions: apiResponse.questions,
       title,
       course,
       user: currentUser?.uid,
     });
+
+    setIsLoading(false);
 
     router.push({
       pathname: "/study",
@@ -77,7 +76,7 @@ const CreatePage: NextPage = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(createStudySet)}> 
+    <form onSubmit={handleSubmit(createStudySet)}>
       <p className="font-bold text-3xl w-4/5 m-auto mt-6">
         Generate A New Study Set
       </p>
@@ -90,8 +89,12 @@ const CreatePage: NextPage = () => {
               placeholder="Give your set a title"
               {...register("title")}
             />
-            { errors.title && <span className="text-red-500 block self-start mt-4">{ errors.title.message }</span> }
-          </div>  
+            {errors.title && (
+              <span className="text-red-500 block self-start mt-4">
+                {errors.title.message}
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center justify-center my-6 w-full mx-2">
@@ -102,7 +105,11 @@ const CreatePage: NextPage = () => {
               placeholder="Course"
               {...register("course")}
             />
-            { errors.course && <span className="text-red-500 self-start mt-4">{ errors.course.message }</span> }
+            {errors.course && (
+              <span className="text-red-500 self-start mt-4">
+                {errors.course.message}
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -130,8 +137,16 @@ const CreatePage: NextPage = () => {
 
       <div className="flex items-center justify-center w-full">
         <div className="w-4/5 mb-4 rounded-lg flex justify-end items-center">
-          <button className="bg-blue-500 text-white rounded-md py-2 px-4">
-            Generate Practice Questions
+          <button className="bg-blue-500 text-white rounded-md py-2 px-4 disabled:bg-blue-300 disabled:opacity-50" disabled={ isLoading } >
+            <p className={`${isLoading ? "hidden" : ""}`}>Generate Practice Questions</p>
+            <div className={`flex items-center text-white ${ !isLoading ? "hidden" : "" }`}>
+              <span className="mr-2">Generating Questions</span>
+              <span className="text-gray-900">
+                <span className="animate-ping text-white">.</span>
+                <span className="animate-ping animate-pulse text-white">.</span>
+                <span className="animate-ping animate-pulse text-white">.</span>
+              </span>
+            </div>
           </button>
         </div>
       </div>
