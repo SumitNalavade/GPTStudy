@@ -13,43 +13,35 @@ function delay(milliseconds: number): Promise<void> {
   });
 }
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
-) {
-  
-  await delay(5000)
-  return res.status(200).json({ questions: [
-    {
-      question: "Question: What is the capital city of France?",
-      answer: "The capital city of France is Paris.",
-    },
-    {
-      question: "Question: What is the capital of California?",
-      answer: "Sacramento",
-    },
-  ] });
+const createQuestions = async (
+  questionsArray: IQuestion[],
+  numQuestions: number
+) => {
+  const messages = questionsArray.flatMap((question: IQuestion) => [
+    { role: "user", content: question.question },
+    { role: "assistant", content: question.answer },
+  ]);
+  messages.push({
+    role: "user",
+    content: `Create a set of ${numQuestions} questions similar in content to these but without answers. Split each question with a ||`,
+  });
 
-  const { questionsArray } = req.body;
+  const chatGPT = await openai.createChatCompletion({
+    model: "gpt-3.5-turbo",
+    messages: messages.map((message: any) => ({
+      role: message.role as "system" | "user" | "assistant",
+      content: message.content,
+    })),
+  });
 
-  const questionsPromiseArray = questionsArray.map((prompt: IQuestion) =>
-    openai.createChatCompletion({
-      model: "gpt-3.5-turbo",
-      messages: [
-        { role: "user", content: prompt.question },
-        { role: "assistant", content: prompt.answer },
-        {
-          role: "user",
-          content: "Create a similar but unique question without the answer to this",
-        },
-      ],
-    })
-  );
+  const chatGPTMessage = chatGPT.data.choices[0].message?.content;
 
-  const questions = await Promise.all(questionsPromiseArray).then((res) =>
-    res.map((elm) => elm.data.choices[0].message?.content)
-  );
+  console.log(chatGPTMessage);
 
+  return chatGPTMessage?.split("||");
+};
+
+const createAnswers = async (questions: string[]) => {
   const answersPromiseArray = questions.map((question: string) =>
     openai.createChatCompletion({
       model: "gpt-3.5-turbo",
@@ -61,12 +53,40 @@ export default async function handler(
     res.map((elm) => elm.data.choices[0].message?.content)
   );
 
-  const combinedArray = questions.map((question, index) => {
-    return {
-      question,
-      answer: answers[index]!,
-    };
+  console.log(answers);
+
+  return answers;
+};
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<ResponseData>
+) {
+  await delay(5000);
+  return res.status(200).json({
+    questions: [
+      {
+        question: "Question: What is the capital city of France?",
+        answer: "The capital city of France is Paris.",
+      },
+      {
+        question: "Question: What is the capital of California?",
+        answer: "Sacramento",
+      },
+    ],
   });
 
-  res.status(200).json({ questions: combinedArray });
+  // const { questionsArray, numQuestions } = req.body;
+
+  // const questions = await createQuestions(questionsArray, numQuestions);
+  // const answers = await createAnswers(questions!);
+
+  // const combinedArray = questions!.map((question, index) => {
+  //   return {
+  //     question,
+  //     answer: answers[index]!,
+  //   };
+  // });
+
+  // res.status(200).json({ questions: combinedArray });
 }

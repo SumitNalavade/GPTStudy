@@ -57,7 +57,7 @@ const CreatePage: NextPage = () => {
     const { title, course } = data;
 
     const apiResponse = (
-      await axios.post("/api/generate", { questionsArray: questions })
+      await axios.post("/api/generate", { questionsArray: questions, numQuestions: 2 })
     ).data;
 
     const docRef = await addDoc(collection(db, "studySets"), {
