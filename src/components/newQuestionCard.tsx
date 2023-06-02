@@ -30,7 +30,7 @@ const NewQuestionCard: React.FC<Props> = ({ handleEditQuestion }) => {
 
   return (
     <div className="flex items-center justify-center my-6">
-      <div className="w-4/5 h-32 bg-gray-100 rounded-lg p-6">
+      <div className="w-full h-32 bg-gray-100 rounded-lg p-6">
         <div className="flex h-full ">
           <div className="w-1/2 flex items-center mx-2">
             <input

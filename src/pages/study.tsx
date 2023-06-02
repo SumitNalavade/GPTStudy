@@ -96,7 +96,7 @@ const StudyPage: NextPage<Props> = ({ questions, title, course }) => {
           </button>
         </div>
 
-        <div className="w-1/2 mt-20">
+        <div className="w-1/2">
           {questions.map((question, index) => (
             <QuestionCard question={question} key={index} />
           ))}

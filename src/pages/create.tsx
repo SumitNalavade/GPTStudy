@@ -27,6 +27,7 @@ const CreatePage: NextPage = () => {
   const formSchema = z.object({
     title: z.string().min(1, "Title is required"),
     course: z.string().min(1, "Course is required"),
+    numQuestions: z.number().min(1).max(10)
   });
 
   type FormData = z.infer<typeof formSchema>;
@@ -34,8 +35,11 @@ const CreatePage: NextPage = () => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
-  } = useForm<FormData>({ resolver: zodResolver(formSchema) });
+  } = useForm<FormData>({ resolver: zodResolver(formSchema), defaultValues: { numQuestions: 3 } });
+
+  const numQuestions = watch("numQuestions")
 
   const handleEditQuestion = (question: IQuestion) => {
     setQuestions((prevQuestions) => {
@@ -57,7 +61,7 @@ const CreatePage: NextPage = () => {
     const { title, course } = data;
 
     const apiResponse = (
-      await axios.post("/api/generate", { questionsArray: questions, numQuestions: 2 })
+      await axios.post("/api/generate", { questionsArray: questions, numQuestions })
     ).data;
 
     const docRef = await addDoc(collection(db, "studySets"), {
@@ -115,16 +119,38 @@ const CreatePage: NextPage = () => {
       </div>
 
       <div className="w-4/5 m-auto">
+        <p className="font-bold text-2xl mt-6">Number of Questions</p>
+
+        <p className="font-medium text-lg mt-2">
+          How many questions do you want to generate?
+        </p>
+
+        <div className="flex items-center">
+          <input
+            type="range"
+            min="1"
+            max="10"
+            className="w-1/2 appearance-none h-2 bg-gray-200 rounded-lg outline-none"
+            {...register("numQuestions", { valueAsNumber: true })}
+          />
+          <span className="ml-4">{numQuestions}</span>
+        </div>
+      </div>
+
+      <div className="w-4/5 m-auto">
         <p className="font-bold text-2xl mt-6">Example Questions</p>
 
         <p className="font-medium text-lg mt-2">
           Enter some of your questions to generate similar questions
         </p>
-      </div>
 
-      {Array.from({ length: numCards }, (_, index) => (
-        <NewQuestionInput key={index} handleEditQuestion={handleEditQuestion} />
-      ))}
+        {Array.from({ length: numCards }, (_, index) => (
+          <NewQuestionInput
+            key={index}
+            handleEditQuestion={handleEditQuestion}
+          />
+        ))}
+      </div>
 
       <div
         className="flex items-center justify-center my-6 w-full"
@@ -137,9 +163,18 @@ const CreatePage: NextPage = () => {
 
       <div className="flex items-center justify-center w-full">
         <div className="w-4/5 mb-4 rounded-lg flex justify-end items-center">
-          <button className="bg-blue-500 text-white rounded-md py-2 px-4 disabled:bg-blue-300 disabled:opacity-50" disabled={ isLoading } >
-            <p className={`${isLoading ? "hidden" : ""}`}>Generate Practice Questions</p>
-            <div className={`flex items-center text-white ${ !isLoading ? "hidden" : "" }`}>
+          <button
+            className="bg-blue-500 text-white rounded-md py-2 px-4 disabled:bg-blue-300 disabled:opacity-50"
+            disabled={isLoading}
+          >
+            <p className={`${isLoading ? "hidden" : ""}`}>
+              Generate Practice Questions
+            </p>
+            <div
+              className={`flex items-center text-white ${
+                !isLoading ? "hidden" : ""
+              }`}
+            >
               <span className="mr-2">Generating Questions</span>
               <span className="text-gray-900">
                 <span className="animate-ping text-white">.</span>
