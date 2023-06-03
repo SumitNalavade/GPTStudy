@@ -13,14 +13,14 @@ const NewQuestionCard: React.FC<Props> = ({ handleEditQuestion }) => {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
 
-  const handleQuestionInput = (evt: React.ChangeEvent<HTMLInputElement>) => {
+  const handleQuestionInput = (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = evt.target
 
     setQuestion(value);
 
   };
 
-  const handleAnswerInput = (evt: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAnswerInput = (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
     setAnswer(evt.target.value);
   };
 
@@ -33,18 +33,16 @@ const NewQuestionCard: React.FC<Props> = ({ handleEditQuestion }) => {
       <div className="w-full h-32 bg-gray-100 rounded-lg p-6">
         <div className="flex h-full ">
           <div className="w-1/2 flex items-center mx-2">
-            <input
+            <textarea
               className="w-full border-b border-gray-300 bg-transparent py-2 px-4 focus:outline-none focus:border-blue-500"
-              type="text"
               placeholder="Question"
               value={question}
               onChange={handleQuestionInput}
             />
           </div>
           <div className="w-1/2 flex items-center mx-2">
-            <input
+            <textarea
               className="w-full border-b border-gray-300 bg-transparent py-2 px-4 focus:outline-none focus:border-blue-500"
-              type="text"
               placeholder="Answer"
               onChange={handleAnswerInput}
               value={answer}

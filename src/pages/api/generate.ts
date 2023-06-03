@@ -79,32 +79,32 @@ export default async function handler(
   res: NextApiResponse<ResponseData>
 ) {
 
-  // await delay(5000);
-  // return res.status(200).json({
-  //   questions: [
-  //     {
-  //       question: "Question: What is the capital city of France?",
-  //       answer: "The capital city of France is Paris.",
-  //     },
-  //     {
-  //       question: "Question: What is the capital of California?",
-  //       answer: "Sacramento",
-  //     },
-  //   ],
-  // });
-
-  const { questionsArray, numQuestions } = req.body;
-
-  const initialQuestions = modifyInitialQuestionsArray(questionsArray, numQuestions)
-  const questions = await createQuestions(initialQuestions);
-  const answers = await createAnswers(questions);
-
-  const combinedArray = questions.map((question, index) => {
-    return {
-      question,
-      answer: answers[index]!,
-    };
+  await delay(5000);
+  return res.status(200).json({
+    questions: [
+      {
+        question: "Question: What is the capital city of France?",
+        answer: "The capital city of France is Paris.",
+      },
+      {
+        question: "Question: What is the capital of California?",
+        answer: "Sacramento",
+      },
+    ],
   });
 
-  res.status(200).json({ questions: combinedArray });
+  // const { questionsArray, numQuestions } = req.body;
+
+  // const initialQuestions = modifyInitialQuestionsArray(questionsArray, numQuestions)
+  // const questions = await createQuestions(initialQuestions);
+  // const answers = await createAnswers(questions);
+
+  // const combinedArray = questions.map((question, index) => {
+  //   return {
+  //     question,
+  //     answer: answers[index]!,
+  //   };
+  // });
+
+  // res.status(200).json({ questions: combinedArray });
 }
