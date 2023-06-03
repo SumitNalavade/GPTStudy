@@ -43,7 +43,7 @@ const StudyPage: NextPage<Props> = ({ questions, title, course, studySetId }) =>
   }
 
   useEffect(() => {
-    updateAccessedDate();
+    updateAccessedDate()
   }, [])
 
   return (
@@ -128,7 +128,8 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
       props: {
         questions: set.questions,
         title: set.title,
-        course: set.course
+        course: set.course,
+        studySetId: set.id
       }
     }
   }

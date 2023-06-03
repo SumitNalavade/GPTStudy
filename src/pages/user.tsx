@@ -10,7 +10,7 @@ import {
   getDocs,
   doc,
   deleteDoc,
-  orderBy
+  orderBy,
 } from "firebase/firestore";
 import { FaTrash } from "react-icons/fa";
 
@@ -19,7 +19,7 @@ import { db } from "@/utils/firebaseConfig";
 import withAuthProtection from "@/components/withAuthProtection";
 
 const UserPage: NextPage = () => {
-    const router = useRouter();
+  const router = useRouter();
   const auth = getAuth();
   const currentUser = auth.currentUser;
 
@@ -41,12 +41,17 @@ const UserPage: NextPage = () => {
   };
 
   const deleteStudySet = async (studySetId: string) => {
-    await deleteDoc(doc(db, "studySets", studySetId)).then(() => setStudySets(studySets?.filter((elm) => elm.id != studySetId)))
+    await deleteDoc(doc(db, "studySets", studySetId)).then(() =>
+      setStudySets(studySets?.filter((elm) => elm.id != studySetId))
+    );
   };
 
   const navigateToStudyPage = (studySet: IStudySet) => {
-    router.push({ pathname: "/study", query: { studySet: JSON.stringify(studySet) } })
-  }
+    router.push({
+      pathname: "/study",
+      query: { studySet: JSON.stringify(studySet) },
+    });
+  };
 
   useEffect(() => {
     getStudySets().then((res) => setStudySets(res))
@@ -80,7 +85,10 @@ const UserPage: NextPage = () => {
         <h1 className="text-3xl font-bold mb-6">Study Sets</h1>
 
         {studySets?.map((studySet, index) => (
-          <button className="my-4 bg-gray-100 rounded-lg p-6 flex justify-between items-center w-full" onClick={() => navigateToStudyPage(studySet)}>
+          <button
+            className="my-4 bg-gray-100 rounded-lg p-6 flex justify-between items-center w-full"
+            onClick={() => navigateToStudyPage(studySet)}
+          >
             <div>
               <p className="text-lg font-semibold">
                 {studySet.title} | {studySet.course}{" "}
@@ -93,11 +101,15 @@ const UserPage: NextPage = () => {
               color="red"
               onClick={(evt) => {
                 evt.stopPropagation();
-                deleteStudySet(studySet.id)
+                deleteStudySet(studySet.id);
               }}
             />
           </button>
         ))}
+
+        <button className="my-4 bg-gray-100 rounded-lg p-6 w-full text-lg font-semibold" onClick={() => router.push("/create")}>
+          Generate a new study set
+        </button>
       </div>
     </div>
   );
