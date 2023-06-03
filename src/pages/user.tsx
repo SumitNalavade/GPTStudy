@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { NextPage } from "next";
+import { useRouter } from "next/router";
 import { getAuth } from "firebase/auth";
 import { signOut } from "firebase/auth";
 import {
@@ -9,6 +10,7 @@ import {
   getDocs,
   doc,
   deleteDoc,
+  orderBy
 } from "firebase/firestore";
 import { FaTrash } from "react-icons/fa";
 
@@ -17,6 +19,7 @@ import { db } from "@/utils/firebaseConfig";
 import withAuthProtection from "@/components/withAuthProtection";
 
 const UserPage: NextPage = () => {
+    const router = useRouter();
   const auth = getAuth();
   const currentUser = auth.currentUser;
 
@@ -25,7 +28,8 @@ const UserPage: NextPage = () => {
   const getStudySets = async () => {
     const q = query(
       collection(db, "studySets"),
-      where("user", "==", currentUser!.uid)
+      where("user", "==", currentUser!.uid),
+      orderBy("dateAccessed", "desc")
     );
 
     const querySnapshot = await getDocs(q);
@@ -39,6 +43,10 @@ const UserPage: NextPage = () => {
   const deleteStudySet = async (studySetId: string) => {
     await deleteDoc(doc(db, "studySets", studySetId)).then(() => setStudySets(studySets?.filter((elm) => elm.id != studySetId)))
   };
+
+  const navigateToStudyPage = (studySet: IStudySet) => {
+    router.push({ pathname: "/study", query: { studySet: JSON.stringify(studySet) } })
+  }
 
   useEffect(() => {
     getStudySets().then((res) => setStudySets(res))
@@ -72,20 +80,23 @@ const UserPage: NextPage = () => {
         <h1 className="text-3xl font-bold mb-6">Study Sets</h1>
 
         {studySets?.map((studySet, index) => (
-          <div className="my-4 bg-gray-100 rounded-lg p-6 flex justify-between items-center">
+          <button className="my-4 bg-gray-100 rounded-lg p-6 flex justify-between items-center w-full" onClick={() => navigateToStudyPage(studySet)}>
             <div>
               <p className="text-lg font-semibold">
                 {studySet.title} | {studySet.course}{" "}
               </p>
-              <p>{studySet.questions.length} terms</p>
+              <p className="text-start">{studySet.questions.length} terms</p>
             </div>
 
             <FaTrash
               size={"20"}
               color="red"
-              onClick={() => deleteStudySet(studySet.id)}
+              onClick={(evt) => {
+                evt.stopPropagation();
+                deleteStudySet(studySet.id)
+              }}
             />
-          </div>
+          </button>
         ))}
       </div>
     </div>

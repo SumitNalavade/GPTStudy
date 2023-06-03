@@ -64,11 +64,15 @@ const CreatePage: NextPage = () => {
       await axios.post("/api/generate", { questionsArray: questions, numQuestions })
     ).data;
 
+    const currentDate = new Date()
+
     const docRef = await addDoc(collection(db, "studySets"), {
       questions: apiResponse.questions,
       title,
       course,
       user: currentUser?.uid,
+      dateCreated: currentDate,
+      dateAccessed: currentDate
     });
 
     setIsLoading(false);

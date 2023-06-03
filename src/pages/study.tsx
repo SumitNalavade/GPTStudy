@@ -1,10 +1,10 @@
 import { NextPage, GetServerSideProps } from "next";
 import { useState, useEffect } from "react";
 import { getAuth } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 
 import { db } from "@/utils/firebaseConfig";
-import { IQuestion } from "@/utils/interfaces";
+import { IQuestion, IStudySet } from "@/utils/interfaces";
 
 import QuestionCard from "@/components/questionCard";
 
@@ -12,9 +12,10 @@ interface Props {
   questions: IQuestion[];
   title: string;
   course: string;
+  studySetId: string
 }
 
-const StudyPage: NextPage<Props> = ({ questions, title, course }) => {
+const StudyPage: NextPage<Props> = ({ questions, title, course, studySetId }) => {
   const auth = getAuth();
   const currentUser = auth.currentUser;
 
@@ -33,6 +34,18 @@ const StudyPage: NextPage<Props> = ({ questions, title, course }) => {
     setDisplayQuestion(!displayQuestion);
   };
 
+  const updateAccessedDate = async () => {
+    const studySetRef = doc(db, "studySets", studySetId)
+
+    await updateDoc(studySetRef, {
+      dateAccessed: new Date()
+    })
+  }
+
+  useEffect(() => {
+    updateAccessedDate();
+  }, [])
+
   return (
     <>
       <div className="flex flex-col items-center mt-12 h-full justify-center">
@@ -40,7 +53,7 @@ const StudyPage: NextPage<Props> = ({ questions, title, course }) => {
         <p className="text-lg w-1/2 mb-4">{course}</p>
 
         <div
-          className="w-1/2 h-96 rounded-xl bg-gray-100 cursor-pointer"
+          className="w-1/2 min-h-[375px] rounded-xl bg-gray-100 cursor-pointer"
           onClick={handleCardFlip}
         >
           <div className="flex items-center text-gray-600 text-2xl text-center h-full p-8 justify-center">
@@ -107,7 +120,18 @@ const StudyPage: NextPage<Props> = ({ questions, title, course }) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-  const { studySetId } = query;
+  const { studySetId, studySet } = query;
+
+  if(studySet) {
+    const set: IStudySet = JSON.parse(studySet as string);
+    return {
+      props: {
+        questions: set.questions,
+        title: set.title,
+        course: set.course
+      }
+    }
+  }
 
   const docRef = doc(db, "studySets", studySetId as string);
   const docSnap = await getDoc(docRef);
@@ -119,7 +143,8 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
     props: {
       questions,
       title,
-      course
+      course,
+      studySetId
     },
   };
 };

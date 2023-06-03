@@ -10,4 +10,6 @@ export interface IStudySet {
     title: string
     user: string
     id: string
+    dateCreated: string
+    dateAccessed: string
 }
