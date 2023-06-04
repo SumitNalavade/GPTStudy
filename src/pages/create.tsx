@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import { useState } from "react";
+import react, { useState } from "react";
 import { useRouter } from "next/router";
 import { getAuth } from "firebase/auth";
 import { collection, addDoc } from "firebase/firestore";
@@ -23,6 +23,8 @@ const CreatePage: NextPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [numCards, setNumCards] = useState(3);
   const [questions, setQuestions] = useState<IQuestion[]>([]);
+
+  console.log(questions)
 
   const formSchema = z.object({
     title: z.string().min(1, "Title is required"),
@@ -84,7 +86,7 @@ const CreatePage: NextPage = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(createStudySet)}>
+    <div>
       <p className="font-bold text-3xl w-4/5 m-auto mt-6">
         Generate A New Study Set
       </p>
@@ -171,7 +173,7 @@ const CreatePage: NextPage = () => {
             className="bg-blue-500 text-white rounded-md py-2 px-4 disabled:bg-blue-300 disabled:opacity-50"
             disabled={isLoading}
           >
-            <p className={`${isLoading ? "hidden" : ""}`}>
+            <p className={`${isLoading ? "hidden" : ""}`} onClick={handleSubmit(createStudySet)}>
               Generate Practice Questions
             </p>
             <div
@@ -189,7 +191,7 @@ const CreatePage: NextPage = () => {
           </button>
         </div>
       </div>
-    </form>
+    </div>
   );
 };
 
