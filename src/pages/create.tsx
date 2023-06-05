@@ -1,5 +1,6 @@
 import { NextPage } from "next";
 import react, { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { getAuth } from "firebase/auth";
 import { collection, addDoc } from "firebase/firestore";
@@ -20,11 +21,8 @@ const CreatePage: NextPage = () => {
   const currentUser = auth.currentUser;
   const router = useRouter();
 
-  const [isLoading, setIsLoading] = useState(false);
   const [numCards, setNumCards] = useState(3);
   const [questions, setQuestions] = useState<IQuestion[]>([]);
-
-  console.log(questions);
 
   const formSchema = z.object({
     title: z.string().min(1, "Title is required"),
@@ -55,31 +53,35 @@ const CreatePage: NextPage = () => {
     });
   };
 
-  const createStudySet = async (data: FormData) => {
-    setIsLoading(true);
+  const mutation = useMutation(
+    ["createStudySet"],
+    async (data: FormData) => {
+      const { title, course } = data;
 
-    const { title, course } = data;
+      const apiResponse = (await axios.post("/api/generate", { questionsArray: questions, numQuestions })).data;
 
-    const apiResponse = (await axios.post("/api/generate", { questionsArray: questions, numQuestions })).data;
+      const currentDate = new Date();
 
-    const currentDate = new Date();
+      const docRef = await addDoc(collection(db, "studySets"), {
+        questions: apiResponse.questions,
+        title,
+        course,
+        user: currentUser?.uid,
+        dateCreated: currentDate,
+        dateAccessed: currentDate,
+      });
 
-    const docRef = await addDoc(collection(db, "studySets"), {
-      questions: apiResponse.questions,
-      title,
-      course,
-      user: currentUser?.uid,
-      dateCreated: currentDate,
-      dateAccessed: currentDate,
-    });
-
-    setIsLoading(false);
-
-    router.push({
-      pathname: "/study",
-      query: { studySetId: docRef.id },
-    });
-  };
+      return docRef;
+    },
+    {
+      onSuccess: (docRef) => {
+        router.push({
+          pathname: "/study",
+          query: { studySetId: docRef.id },
+        });
+      },
+    }
+  );
 
   return (
     <div>
@@ -134,11 +136,11 @@ const CreatePage: NextPage = () => {
 
       <div className="flex items-center justify-center w-full">
         <div className="w-4/5 mb-4 rounded-lg flex justify-end items-center">
-          <button className="bg-blue-500 text-white rounded-md py-2 px-4 disabled:bg-blue-300 disabled:opacity-50" disabled={isLoading}>
-            <p className={`${isLoading ? "hidden" : ""}`} onClick={handleSubmit(createStudySet)}>
+          <button className="bg-blue-500 text-white rounded-md py-2 px-4 disabled:bg-blue-300 disabled:opacity-50" disabled={mutation.isLoading}>
+            <p className={`${mutation.isLoading ? "hidden" : ""}`} onClick={handleSubmit((data) => mutation.mutate(data))}>
               Generate Practice Questions
             </p>
-            <div className={`flex items-center text-white ${!isLoading ? "hidden" : ""}`}>
+            <div className={`flex items-center text-white ${!mutation.isLoading ? "hidden" : ""}`}>
               <span className="mr-2">Generating Questions</span>
               <span className="text-gray-900">
                 <span className="animate-ping text-white">.</span>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
+import { useQuery } from "@tanstack/react-query";
 import { getAuth } from "firebase/auth";
 import { signOut } from "firebase/auth";
 import { collection, query, where, getDocs, doc, deleteDoc, orderBy, limit, QueryDocumentSnapshot, DocumentData, startAt } from "firebase/firestore";
@@ -39,14 +40,6 @@ const UserPage: NextPage = () => {
     return docData;
   };
 
-  const handlePaginateStudySets = async () => {
-    const newStudySets = await getStudySets(lastVisibleStudySet);
-
-    studySets ? setStudySets([...studySets!, ...newStudySets]) : setStudySets(newStudySets);
-
-    if (newStudySets.length < 10) setPreventPagination(true);
-  };
-
   const deleteStudySet = async (studySetId: string) => {
     await deleteDoc(doc(db, "studySets", studySetId)).then(() => setStudySets(studySets?.filter((elm) => elm.id != studySetId)));
   };
@@ -58,9 +51,13 @@ const UserPage: NextPage = () => {
     });
   };
 
-  useEffect(() => {
-    // handlePaginateStudySets();
-  }, []);
+  const { isFetching, error, data, refetch } = useQuery(["initialStudySets"], async () => {
+    const newStudySets = await getStudySets(lastVisibleStudySet);
+
+    studySets ? setStudySets([...studySets!, ...newStudySets]) : setStudySets(newStudySets);
+
+    if (newStudySets.length < 10) setPreventPagination(true);
+  });
 
   return (
     <div className="mt-12 w-4/5 m-auto">
@@ -102,7 +99,21 @@ const UserPage: NextPage = () => {
           </button>
         ))}
 
-        <button className="my-4 bg-gray-100 rounded-lg p-6 w-full text-lg font-semibold disabled:text-gray-300" onClick={handlePaginateStudySets} disabled={preventPagination}>
+        {isFetching && (
+          <div className="min-h-screen ">
+            <div className="mx-auto p-4">
+              <div className="rounded p-6">
+                <div className="animate-pulse">
+                  {Array.from({ length: 10 }, (_, index) => (
+                    <div key={index} className="h-4 bg-gray-300 rounded mb-2"></div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <button className="my-4 bg-gray-100 rounded-lg p-6 w-full text-lg font-semibold disabled:text-gray-300" onClick={() => refetch()} disabled={preventPagination}>
           More
         </button>
       </div>

@@ -1,6 +1,5 @@
 import { NextPage, GetServerSideProps } from "next";
 import { useState, useEffect } from "react";
-import { getAuth } from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 
 import { db } from "@/utils/firebaseConfig";
@@ -16,9 +15,6 @@ interface Props {
 }
 
 const StudyPage: NextPage<Props> = ({ questions, title, course, studySetId }) => {
-  const auth = getAuth();
-  const currentUser = auth.currentUser;
-
   const [displayQuestion, setDisplayQuestion] = useState(true);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 

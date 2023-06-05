@@ -1,6 +1,7 @@
 import { NextPage } from "next";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { useMutation } from "@tanstack/react-query";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 
@@ -42,13 +43,13 @@ const SignInPage: NextPage = () => {
       message: "Passwords do not match",
     });
 
-  type signUpFormData = z.infer<typeof signUpFormSchema>;
+  type SignUpFormData = z.infer<typeof signUpFormSchema>;
 
   const {
     register: registerSignUp,
     handleSubmit: handleSignUp,
     formState: { errors: signUpErrors },
-  } = useForm<signUpFormData>({ resolver: zodResolver(signUpFormSchema) });
+  } = useForm<SignUpFormData>({ resolver: zodResolver(signUpFormSchema) });
 
   const handleChangeButtonClicked = () => {
     setErrorMessage(undefined);
@@ -61,21 +62,37 @@ const SignInPage: NextPage = () => {
     userCredentials ? router.push("/create") : "";
   };
 
-  const createUser = async (data: signUpFormData) => {
-    const { email, password } = data;
+  const createUserMutation = useMutation(
+    ["createUser"],
+    async (data: SignUpFormData) => {
+      const { email, password } = data;
 
-    const userCredentials = await createUserWithEmailAndPassword(auth, email, password).catch(handleError);
+      const userCredentials = await createUserWithEmailAndPassword(auth, email, password).catch(handleError);
 
-    userCredentials ? router.push("/create") : "";
-  };
+      return userCredentials;
+    },
+    {
+      onSuccess: (userCredentials) => {
+        userCredentials ? router.push("/create") : "";
+      },
+    }
+  );
 
-  const loginUser = async (data: LoginFormData) => {
-    const { email, password } = data;
+  const loginUserMutation = useMutation(
+    ["loginUser"],
+    async (data: LoginFormData) => {
+      const { email, password } = data;
 
-    const userCredentials = await signInWithEmailAndPassword(auth, email, password).catch(handleError);
+      const userCredentials = await signInWithEmailAndPassword(auth, email, password).catch(handleError);
 
-    userCredentials ? router.push("/create") : "";
-  };
+      return userCredentials;
+    },
+    {
+      onSuccess: (userCredentials) => {
+        userCredentials ? router.push("/create") : "";
+      },
+    }
+  );
 
   const handleError = (error: FirebaseError) => {
     const code = error.code;
@@ -118,7 +135,7 @@ const SignInPage: NextPage = () => {
           <span>Login with Google</span>
         </button>
 
-        <form onSubmit={isLogin ? handleLogin(loginUser) : handleSignUp(createUser)}>
+        <div>
           <input
             className={`w-full border-b bg-transparent py-2 px-4 focus:outline-none ${errorMessage ? "border-red-500" : ""} focus:border-blue-500 my-4`}
             type="email"
@@ -147,12 +164,12 @@ const SignInPage: NextPage = () => {
             {signUpErrors.confirmPassword && <span className="text-red-500">{signUpErrors.confirmPassword.message}</span>}
           </div>
 
-          <button className={`flex items-center justify-center my-6 w-full`}>
+          <button className={`flex items-center justify-center my-6 w-full disabled:opacity-50`} disabled={ loginUserMutation.isLoading || createUserMutation.isLoading } onClick={isLogin ? handleLogin((loginData) => loginUserMutation.mutate(loginData)) : handleSignUp((signUpData) => createUserMutation.mutate(signUpData))}>
             <div className="w-4/5 h-16 rounded-lg p-6 flex justify-center items-center bg-blue-500 text-white">
               <h2 className="font-medium">{isLogin ? "Log In" : "Sign Up"}</h2>
             </div>
           </button>
-        </form>
+        </div>
 
         <button className="flex items-center justify-center my-6 w-full" onClick={handleChangeButtonClicked}>
           <div className="w-4/5 h-12 rounded-lg p-6 flex justify-center items-center bg-gray-100">
