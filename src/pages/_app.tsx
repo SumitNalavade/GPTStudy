@@ -17,3 +17,7 @@ export default function App({ Component, pageProps }: AppProps) {
     </Container>
   );
 }
+
+/*
+  TODO: Paginate questions and study sets, fix mobile layout
+*/

@@ -12,7 +12,7 @@ interface Props {
   questions: IQuestion[];
   title: string;
   course: string;
-  studySetId: string
+  studySetId: string;
 }
 
 const StudyPage: NextPage<Props> = ({ questions, title, course, studySetId }) => {
@@ -35,16 +35,16 @@ const StudyPage: NextPage<Props> = ({ questions, title, course, studySetId }) =>
   };
 
   const updateAccessedDate = async () => {
-    const studySetRef = doc(db, "studySets", studySetId)
+    const studySetRef = doc(db, "studySets", studySetId);
 
     await updateDoc(studySetRef, {
-      dateAccessed: new Date()
-    })
-  }
+      dateAccessed: new Date(),
+    });
+  };
 
   useEffect(() => {
-    updateAccessedDate()
-  }, [])
+    updateAccessedDate();
+  }, []);
 
   return (
     <>
@@ -52,16 +52,9 @@ const StudyPage: NextPage<Props> = ({ questions, title, course, studySetId }) =>
         <p className="font-bold text-4xl w-1/2">{title}</p>
         <p className="text-lg w-1/2 mb-4">{course}</p>
 
-        <div
-          className="w-1/2 min-h-[375px] rounded-xl bg-gray-100 cursor-pointer"
-          onClick={handleCardFlip}
-        >
+        <div className="w-1/2 min-h-[375px] rounded-xl bg-gray-100 cursor-pointer" onClick={handleCardFlip}>
           <div className="flex items-center text-gray-600 text-2xl text-center h-full p-8 justify-center">
-            {displayQuestion ? (
-              <p>{questions[currentQuestionIndex].question}</p>
-            ) : (
-              <p>{questions[currentQuestionIndex].answer}</p>
-            )}
+            {displayQuestion ? <p>{questions[currentQuestionIndex].question}</p> : <p>{questions[currentQuestionIndex].answer}</p>}
           </div>
         </div>
 
@@ -71,16 +64,7 @@ const StudyPage: NextPage<Props> = ({ questions, title, course, studySetId }) =>
             disabled={currentQuestionIndex === 0}
             onClick={() => handleButtonClicked("previous")}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="w-6 h-6"
-            >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
               <path d="M19 12H6M12 5l-7 7 7 7" />
             </svg>
           </button>
@@ -122,16 +106,16 @@ const StudyPage: NextPage<Props> = ({ questions, title, course, studySetId }) =>
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   const { studySetId, studySet } = query;
 
-  if(studySet) {
+  if (studySet) {
     const set: IStudySet = JSON.parse(studySet as string);
     return {
       props: {
         questions: set.questions,
         title: set.title,
         course: set.course,
-        studySetId: set.id
-      }
-    }
+        studySetId: set.id,
+      },
+    };
   }
 
   const docRef = doc(db, "studySets", studySetId as string);
@@ -145,7 +129,7 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
       questions,
       title,
       course,
-      studySetId
+      studySetId,
     },
   };
 };
