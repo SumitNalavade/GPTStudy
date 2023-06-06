@@ -9,9 +9,9 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center mt-20">
-        <h1 className="text-8xl font-bold text-center mt-20">GPT Study</h1>
-        <p className="text-2xl py-2">Generate study material with the GPT AI</p>
+      <div className="flex flex-col items-center justify-center pb-20 h-full">
+        <h1 className="sm:text-8xl text-7xl font-bold text-center">GPT Study</h1>
+        <p className="sm:text-2xl text-xl py-2">Generate study material with the GPT AI</p>
 
         <Link href={user ? "/create" : "/auth"} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 mt-10 rounded-lg shadow-lg">
           Create a free study set

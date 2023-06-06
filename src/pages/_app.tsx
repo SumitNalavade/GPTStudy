@@ -26,5 +26,9 @@ export default function App({ Component, pageProps }: AppProps) {
 }
 
 /*
-  TODO: Fix mobile layout
+  TODO
+  Fix Mobile Layout
+  Fix Latex on flashcardse
+  Fix Profile Picture
+  Add Discover Page
 */
