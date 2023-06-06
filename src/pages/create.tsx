@@ -84,9 +84,9 @@ const CreatePage: NextPage = () => {
   );
 
   return (
-    <div>
-      <p className="font-bold text-3xl w-4/5 m-auto mt-6">Generate A New Study Set</p>
-      <div className="flex w-4/5 m-auto">
+    <div className="xl:w-4/5 m-auto">
+      <p className="font-bold sm:text-3xl text-2xl m-auto mt-6">Generate A New Study Set</p>
+      <div className="xl:flex m-auto">
         <div className="flex items-center justify-center my-6 w-full mx-2">
           <div className="bg-gray-100 rounded-lg p-6 flex flex-col justify-center items-center w-full">
             <input
@@ -107,21 +107,21 @@ const CreatePage: NextPage = () => {
         </div>
       </div>
 
-      <div className="w-4/5 m-auto">
-        <p className="font-bold text-2xl mt-6">Number of Questions</p>
+      <div>
+        <p className="font-bold text-xl sm:text-2xl mt-6">Number of Questions</p>
 
-        <p className="font-medium text-lg mt-2">How many questions do you want to generate?</p>
+        <p className="font-medium text-md sm:text-lg mt-2">How many questions do you want to generate?</p>
 
         <div className="flex items-center">
-          <input type="range" min="1" max="10" className="w-1/2 appearance-none h-2 bg-gray-200 rounded-lg outline-none" {...register("numQuestions", { valueAsNumber: true })} />
+          <input type="range" min="1" max="10" className="sm:w-1/2 w-full appearance-none h-2 bg-gray-200 rounded-lg outline-none" {...register("numQuestions", { valueAsNumber: true })} />
           <span className="ml-4">{numQuestions}</span>
         </div>
       </div>
 
-      <div className="w-4/5 m-auto">
-        <p className="font-bold text-2xl mt-6">Example Questions</p>
+      <div>
+        <p className="font-bold text-xl sm:text-2xl mt-6">Example Questions</p>
 
-        <p className="font-medium text-lg mt-2">Enter some of your questions to generate similar questions</p>
+        <p className="font-medium text-md sm:text-lg mt-2">Enter some of your questions to generate similar questions</p>
 
         {Array.from({ length: numCards }, (_, index) => (
           <NewQuestionInput key={index} handleEditQuestion={handleEditQuestion} />
@@ -129,27 +129,25 @@ const CreatePage: NextPage = () => {
       </div>
 
       <div className="flex items-center justify-center my-6 w-full" onClick={() => setNumCards(numCards + 1)}>
-        <div className="w-4/5 h-32 bg-gray-100 rounded-lg p-6 flex justify-center items-center">
+        <div className="w-full h-32 bg-gray-100 rounded-lg p-6 flex justify-center items-center">
           <h2 className="font-medium">+ Add Card</h2>
         </div>
       </div>
 
-      <div className="flex items-center justify-center w-full">
-        <div className="w-4/5 mb-4 rounded-lg flex justify-end items-center">
-          <button className="bg-blue-500 text-white rounded-md py-2 px-4 disabled:bg-blue-300 disabled:opacity-50" disabled={mutation.isLoading}>
-            <p className={`${mutation.isLoading ? "hidden" : ""}`} onClick={handleSubmit((data) => mutation.mutate(data))}>
-              Generate Practice Questions
-            </p>
-            <div className={`flex items-center text-white ${!mutation.isLoading ? "hidden" : ""}`}>
-              <span className="mr-2">Generating Questions</span>
-              <span className="text-gray-900">
-                <span className="animate-ping text-white">.</span>
-                <span className="animate-ping animate-pulse text-white">.</span>
-                <span className="animate-ping animate-pulse text-white">.</span>
-              </span>
-            </div>
-          </button>
-        </div>
+      <div className="flex items-center justify-center sm:justify-end mb-4 w-full">
+        <button className="bg-blue-500 text-white rounded-md py-2 px-4 disabled:bg-blue-300 disabled:opacity-50 w-full sm:w-fit" disabled={mutation.isLoading}>
+          <p className={`${mutation.isLoading ? "hidden" : ""}`} onClick={handleSubmit((data) => mutation.mutate(data))}>
+            Generate Practice Questions
+          </p>
+          <div className={`flex items-center text-white ${!mutation.isLoading ? "hidden" : ""}`}>
+            <span className="mr-2">Generating Questions</span>
+            <span className="text-gray-900">
+              <span className="animate-ping text-white">.</span>
+              <span className="animate-ping animate-pulse text-white">.</span>
+              <span className="animate-ping animate-pulse text-white">.</span>
+            </span>
+          </div>
+        </button>
       </div>
     </div>
   );

@@ -32,30 +32,30 @@ const NewQuestionCard: React.FC<Props> = ({ handleEditQuestion }) => {
 
   return (
     <div className="flex items-center justify-center my-6">
-      <div className="w-full h-36 bg-gray-100 rounded-lg p-4">
-        <div className="bg-gray-300 py-2 rounded-lg w-1/4">
+      <div className="w-full md:h-36 bg-gray-100 rounded-lg p-4">
+        <div className="bg-gray-300 py-2 rounded-lg md:w-1/4 w-1/2">
           <div className="hover:cursor-pointer">
             <BiMath className="mx-4" onClick={() => setMathActive(!mathActive)} />
           </div>
         </div>
-        <div className="flex h-full ">
-          <div className="w-1/2 flex items-center mx-2">
+        <div className="md:flex h-full ">
+          <div className="md:w-1/2 flex items-center mx-2">
             {mathActive ? (
               <MathInput numericToolbarKeys={["cos", "sin", "tan"]} setValue={setQuestion} />
             ) : (
               <textarea
-                className="w-full border-b border-gray-300 bg-transparent px-4 focus:outline-none focus:border-blue-500"
+                className="w-full border-b border-gray-300 bg-transparent px-4 my-2 focus:outline-none focus:border-blue-500"
                 placeholder="Question"
                 value={question}
                 onChange={handleQuestionInput}
               />
             )}
           </div>
-          <div className="w-1/2 flex items-center mx-2" onBlur={handleBlur}>
+          <div className="md:w-1/2 flex items-center mx-2" onBlur={handleBlur}>
             {mathActive ? (
               <MathInput numericToolbarKeys={["cos", "sin", "tan"]} setValue={setAnswer} />
             ) : (
-              <textarea className="w-full border-b border-gray-300 bg-transparent px-4 focus:outline-none focus:border-blue-500" placeholder="Answer" onChange={handleAnswerInput} value={answer} />
+              <textarea className="w-full border-b border-gray-300 my-2 bg-transparent px-4 focus:outline-none focus:border-blue-500" placeholder="Answer" onChange={handleAnswerInput} value={answer} />
             )}
           </div>
         </div>
