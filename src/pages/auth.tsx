@@ -56,11 +56,15 @@ const SignInPage: NextPage = () => {
     setIsLogin(!isLogin);
   };
 
-  const handleGoogleAuth = async () => {
+  const signInWithGoogleMutation = useMutation(["handleGoogleAuth"], async () => {
     const userCredentials = await signInWithPopup(auth, googleProvider);
 
-    userCredentials ? router.push("/create") : "";
-  };
+    return userCredentials
+  }, {
+    onSuccess: (userCredentials) => {
+      userCredentials ? router.push("/create") : ""
+    }
+  });
 
   const createUserMutation = useMutation(
     ["createUser"],
@@ -129,7 +133,7 @@ const SignInPage: NextPage = () => {
 
         <button
           className="w-full m-auto my-12 justify-center px-4 py-2 border flex gap-2 border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
-          onClick={handleGoogleAuth}
+          onClick={() => signInWithGoogleMutation.mutate()}
         >
           <img className="w-6 h-6" src="https://www.svgrepo.com/show/475656/google-color.svg" loading="lazy" alt="google logo" />
           <span>Login with Google</span>
@@ -164,7 +168,11 @@ const SignInPage: NextPage = () => {
             {signUpErrors.confirmPassword && <span className="text-red-500">{signUpErrors.confirmPassword.message}</span>}
           </div>
 
-          <button className={`flex items-center justify-center my-6 w-full disabled:opacity-50`} disabled={ loginUserMutation.isLoading || createUserMutation.isLoading } onClick={isLogin ? handleLogin((loginData) => loginUserMutation.mutate(loginData)) : handleSignUp((signUpData) => createUserMutation.mutate(signUpData))}>
+          <button
+            className={`flex items-center justify-center my-6 w-full disabled:opacity-50`}
+            disabled={loginUserMutation.isLoading || createUserMutation.isLoading}
+            onClick={isLogin ? handleLogin((loginData) => loginUserMutation.mutate(loginData)) : handleSignUp((signUpData) => createUserMutation.mutate(signUpData))}
+          >
             <div className="w-4/5 h-16 rounded-lg p-6 flex justify-center items-center bg-blue-500 text-white">
               <h2 className="font-medium">{isLogin ? "Log In" : "Sign Up"}</h2>
             </div>

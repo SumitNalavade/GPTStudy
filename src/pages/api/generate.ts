@@ -79,36 +79,36 @@ export default async function handler(
   res: NextApiResponse<ResponseData>
 ) {
 
-  await delay(5000);
-  return res.status(200).json({
-    questions: [
-      {
-        question: "Question: What is the capital city of France?",
-        answer: "The capital city of France is Paris.",
-      },
-      {
-        question: "Question: What is the capital of California?",
-        answer: "Sacramento",
-      },
-      {
-        question: "What is the atomic number of the element that has 16 neutrons and 16 electrons in its atom?",
-        answer: "The atomic number of an element is equal to the number of protons in its nucleus, and it determines the identity of the element. To find the atomic number of the element described, we need to use the fact that the number of electrons in a neutral atom is equal to the number of protons in its nucleus. Therefore, if the element has 16 electrons, it must have 16 protons. The number of neutrons in an atom can be calculated by subtracting the atomic number from the mass number. The mass number is the sum of the number of protons and neutrons in the nucleus. In this case, we are given that the atom has 16 neutrons, so we can set up the following equation: mass number = atomic number + number of neutrons mass number = 16 + 16 mass number = 32 Therefore, the element has an atomic number of 16 (which is also the number of protons) and a mass number of 32. Based on the periodic table of elements, we can determine that this is the element sulfur (S)."
-      }
-    ],
-  });
-
-  // const { questionsArray, numQuestions } = req.body;
-
-  // const initialQuestions = modifyInitialQuestionsArray(questionsArray, numQuestions)
-  // const questions = await createQuestions(initialQuestions);
-  // const answers = await createAnswers(questions);
-
-  // const combinedArray = questions.map((question, index) => {
-  //   return {
-  //     question,
-  //     answer: answers[index]!,
-  //   };
+  // await delay(5000);
+  // return res.status(200).json({
+  //   questions: [
+  //     {
+  //       question: "Question: What is the capital city of France?",
+  //       answer: "The capital city of France is Paris.",
+  //     },
+  //     {
+  //       question: "Question: What is the capital of California?",
+  //       answer: "Sacramento",
+  //     },
+  //     {
+  //       question: "What is the atomic number of the element that has 16 neutrons and 16 electrons in its atom?",
+  //       answer: "The atomic number of an element is equal to the number of protons in its nucleus, and it determines the identity of the element. To find the atomic number of the element described, we need to use the fact that the number of electrons in a neutral atom is equal to the number of protons in its nucleus. Therefore, if the element has 16 electrons, it must have 16 protons. The number of neutrons in an atom can be calculated by subtracting the atomic number from the mass number. The mass number is the sum of the number of protons and neutrons in the nucleus. In this case, we are given that the atom has 16 neutrons, so we can set up the following equation: mass number = atomic number + number of neutrons mass number = 16 + 16 mass number = 32 Therefore, the element has an atomic number of 16 (which is also the number of protons) and a mass number of 32. Based on the periodic table of elements, we can determine that this is the element sulfur (S)."
+  //     }
+  //   ],
   // });
 
-  // res.status(200).json({ questions: combinedArray });
+  const { questionsArray, numQuestions } = req.body;
+
+  const initialQuestions = modifyInitialQuestionsArray(questionsArray, numQuestions)
+  const questions = await createQuestions(initialQuestions);
+  const answers = await createAnswers(questions);
+
+  const combinedArray = questions.map((question, index) => {
+    return {
+      question,
+      answer: answers[index]!,
+    };
+  });
+
+  res.status(200).json({ questions: combinedArray });
 }

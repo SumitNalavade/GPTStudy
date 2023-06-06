@@ -1,5 +1,6 @@
 import { NextPage, GetServerSideProps } from "next";
 import { useState, useEffect } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 
 import { db } from "@/utils/firebaseConfig";
@@ -30,16 +31,16 @@ const StudyPage: NextPage<Props> = ({ questions, title, course, studySetId }) =>
     setDisplayQuestion(!displayQuestion);
   };
 
-  const updateAccessedDate = async () => {
+  const updateAccessedDateMutation = useMutation(["updateAccessedDate"], async () => {
     const studySetRef = doc(db, "studySets", studySetId);
 
     await updateDoc(studySetRef, {
-      dateAccessed: new Date(),
-    });
-  };
+      dateAccessed: new Date()
+    })
+  })
 
   useEffect(() => {
-    updateAccessedDate();
+    updateAccessedDateMutation.mutate();
   }, []);
 
   return (

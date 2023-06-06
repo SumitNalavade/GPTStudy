@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { getAuth } from "firebase/auth";
 import { signOut } from "firebase/auth";
 import { collection, query, where, getDocs, doc, deleteDoc, orderBy, limit, QueryDocumentSnapshot, DocumentData, startAt } from "firebase/firestore";
@@ -16,7 +16,7 @@ const UserPage: NextPage = () => {
   const auth = getAuth();
   const currentUser = auth.currentUser;
 
-  const [studySets, setStudySets] = useState<IStudySet[]>();
+  const [studySets, setStudySets] = useState<IStudySet[]>([]);
   const [lastVisibleStudySet, setlastVisibleStudySet] = useState<QueryDocumentSnapshot<DocumentData> | undefined>();
   const [preventPagination, setPreventPagination] = useState(false);
 
@@ -40,9 +40,19 @@ const UserPage: NextPage = () => {
     return docData;
   };
 
-  const deleteStudySet = async (studySetId: string) => {
-    await deleteDoc(doc(db, "studySets", studySetId)).then(() => setStudySets(studySets?.filter((elm) => elm.id != studySetId)));
-  };
+  const deleteStudySetMutation = useMutation(
+    ["deleteStudySet"],
+    async (studySetId: string) => {
+      await deleteDoc(doc(db, "studySets", studySetId))
+
+      return studySetId;
+    },
+    {
+      onSuccess: (studySetId) => {
+        setStudySets(studySets?.filter((elm) => elm.id != studySetId));
+      },
+    }
+  );
 
   const navigateToStudyPage = (studySet: IStudySet) => {
     router.push({
@@ -57,6 +67,8 @@ const UserPage: NextPage = () => {
     studySets ? setStudySets([...studySets!, ...newStudySets]) : setStudySets(newStudySets);
 
     if (newStudySets.length < 10) setPreventPagination(true);
+
+    return "";
   });
 
   return (
@@ -93,7 +105,7 @@ const UserPage: NextPage = () => {
               color="red"
               onClick={(evt) => {
                 evt.stopPropagation();
-                deleteStudySet(studySet.id);
+                deleteStudySetMutation.mutate(studySet.id);
               }}
             />
           </button>
