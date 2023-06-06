@@ -6,6 +6,7 @@ import { getAuth } from "firebase/auth";
 import { signOut } from "firebase/auth";
 import { collection, query, where, getDocs, doc, deleteDoc, orderBy, limit, QueryDocumentSnapshot, DocumentData, startAt } from "firebase/firestore";
 import { FaTrash } from "react-icons/fa";
+import { AiOutlineUser } from "react-icons/ai"
 
 import { IStudySet } from "@/utils/interfaces";
 import { db } from "@/utils/firebaseConfig";
@@ -74,7 +75,8 @@ const UserPage: NextPage = () => {
   return (
     <div className="mt-12 md:w-4/5 m-auto">
       <div className="flex items-center">
-        <img src="https://lh3.googleusercontent.com/a/AGNmyxbuvwz-kj0Bo-90Cxj6JY5ciui_l8aHZTLpy7E=s96-c?sz=150" alt="" className="w-16 h-16 rounded-full" />
+        
+      <img src={currentUser!.photoURL as string} alt="" className="w-16 h-16 rounded-full" />
 
         <div className="mx-4 sm:flex justify-between w-full">
           <div>
