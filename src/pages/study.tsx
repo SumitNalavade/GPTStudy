@@ -45,17 +45,17 @@ const StudyPage: NextPage<Props> = ({ questions, title, course, studySetId }) =>
 
   return (
     <>
-      <div className="flex flex-col items-center mt-12 h-full justify-center">
-        <p className="font-bold text-4xl w-1/2">{title}</p>
-        <p className="text-lg w-1/2 mb-4">{course}</p>
+      <div className="flex flex-col mt-12 h-full justify-center w-full max-w-3xl m-auto">
+        <p className="font-bold text-5xl sm:text-left text-center">{title}</p>
+        <p className="text-lg sm:text-left text-center mb-4">{course}</p>
 
-        <div className="w-1/2 min-h-[375px] rounded-xl bg-gray-100 cursor-pointer" onClick={handleCardFlip}>
-          <div className="flex items-center text-gray-600 text-2xl text-center h-full p-8 justify-center">
+        <div className="sm:min-h-[375px] min-h-[250px] rounded-xl bg-gray-100 cursor-pointer" onClick={handleCardFlip}>
+          <div className="flex items-center text-gray-600 sm:text-2xl text-lg text-center h-full p-8 justify-center">
             {displayQuestion ? <p>{questions[currentQuestionIndex].question}</p> : <p>{questions[currentQuestionIndex].answer}</p>}
           </div>
         </div>
 
-        <div className="w-1/2 flex justify-evenly items-center mt-4">
+        <div className="flex justify-evenly items-center mt-4">
           <button
             className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={currentQuestionIndex === 0}
@@ -90,7 +90,7 @@ const StudyPage: NextPage<Props> = ({ questions, title, course, studySetId }) =>
           </button>
         </div>
 
-        <div className="w-1/2">
+        <div>
           {questions.map((question, index) => (
             <QuestionCard question={question} key={index} />
           ))}
