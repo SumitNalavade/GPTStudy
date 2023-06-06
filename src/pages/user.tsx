@@ -43,7 +43,7 @@ const UserPage: NextPage = () => {
   const deleteStudySetMutation = useMutation(
     ["deleteStudySet"],
     async (studySetId: string) => {
-      await deleteDoc(doc(db, "studySets", studySetId))
+      await deleteDoc(doc(db, "studySets", studySetId));
 
       return studySetId;
     },
@@ -72,17 +72,17 @@ const UserPage: NextPage = () => {
   });
 
   return (
-    <div className="mt-12 w-4/5 m-auto">
+    <div className="mt-12 md:w-4/5 m-auto">
       <div className="flex items-center">
         <img src="https://lh3.googleusercontent.com/a/AGNmyxbuvwz-kj0Bo-90Cxj6JY5ciui_l8aHZTLpy7E=s96-c?sz=150" alt="" className="w-16 h-16 rounded-full" />
 
-        <div className="mx-4 flex justify-between w-full">
+        <div className="mx-4 sm:flex justify-between w-full">
           <div>
             <p className="text-2xl font-semibold">{currentUser!.displayName}</p>
             <p>{currentUser!.email}</p>
           </div>
 
-          <button className="bg-red-400 text-white rounded-lg px-6 py-2 hover:bg-red-500" onClick={() => signOut(auth)}>
+          <button className="bg-red-400 text-white rounded-lg px-6 py-2 hover:bg-red-500 hidden sm:block" onClick={() => signOut(auth)}>
             Sign Out
           </button>
         </div>
@@ -127,6 +127,10 @@ const UserPage: NextPage = () => {
 
         <button className="my-4 bg-gray-100 rounded-lg p-6 w-full text-lg font-semibold disabled:text-gray-300" onClick={() => refetch()} disabled={preventPagination}>
           More
+        </button>
+
+        <button className="bg-red-400 text-white rounded-lg px-6 py-2 hover:bg-red-500 w-full sm:hidden" onClick={() => signOut(auth)}>
+          Sign Out
         </button>
       </div>
     </div>
