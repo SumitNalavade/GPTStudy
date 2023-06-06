@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { AiOutlineUser } from "react-icons/ai"
 
 import { getAuth } from "firebase/auth";
 
@@ -16,7 +17,7 @@ const Navbar: React.FC = () => {
           </div>
           <div className="flex items-center">
             <Link href={ user ? "/user" : "/auth" } className="rounded-full text-white p-2 flex items-center justify-center">
-              <img src={user?.photoURL as string} alt="Profile Picture" className="w-10 h-10 rounded-full" />
+              { user ? (<img src={user?.photoURL as string} alt="Profile Picture" className="w-10 h-10 rounded-full" />) : <AiOutlineUser size={"2rem"} /> }
             </Link>
           </div>
         </div>

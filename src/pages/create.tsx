@@ -27,7 +27,7 @@ const CreatePage: NextPage = () => {
   const formSchema = z.object({
     title: z.string().min(1, "Title is required"),
     course: z.string().min(1, "Course is required"),
-    numQuestions: z.number().min(1).max(10),
+    numQuestions: z.number().min(1).max(20),
   });
 
   type FormData = z.infer<typeof formSchema>;
@@ -113,7 +113,7 @@ const CreatePage: NextPage = () => {
         <p className="font-medium text-md sm:text-lg mt-2">How many questions do you want to generate?</p>
 
         <div className="flex items-center">
-          <input type="range" min="1" max="10" className="sm:w-1/2 w-full appearance-none h-2 bg-gray-200 rounded-lg outline-none" {...register("numQuestions", { valueAsNumber: true })} />
+          <input type="range" min="1" max="20" className="sm:w-1/2 w-full appearance-none h-2 bg-gray-200 rounded-lg outline-none" {...register("numQuestions", { valueAsNumber: true })} />
           <span className="ml-4">{numQuestions}</span>
         </div>
       </div>
@@ -139,7 +139,7 @@ const CreatePage: NextPage = () => {
           <p className={`${mutation.isLoading ? "hidden" : ""}`} onClick={handleSubmit((data) => mutation.mutate(data))}>
             Generate Practice Questions
           </p>
-          <div className={`flex items-center text-white ${!mutation.isLoading ? "hidden" : ""}`}>
+          <div className={`flex items-center justify-center ${!mutation.isLoading ? "hidden" : ""} text-white`}>
             <span className="mr-2">Generating Questions</span>
             <span className="text-gray-900">
               <span className="animate-ping text-white">.</span>
