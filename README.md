@@ -31,3 +31,27 @@ Start the server
 ~~~bash  
 npm run dev
 ~~~  
+ 
+## Environment Variables  
+To run this project, you will need to add the following environment variables to your .env file  
+```
+OPENAIAPIKEY
+```  
+```
+NEXT_PUBLIC_FIREBASEAPIKEY
+```  
+```
+NEXT_PUBLIC_FIREBASEAUTHDOMAIN
+```
+```
+NEXT_PUBLIC_FIREBASEPROJECTID   
+```
+```
+NEXT_PUBLIC_FIREBASESTORAGEBUCKET  
+```
+```
+NEXT_PUBLIC_FIREBASEMESSAGINGSENDERID  
+```
+```
+NEXT_PUBLIC_FIREBASEAPPID 
+```
