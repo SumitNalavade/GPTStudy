@@ -126,8 +126,8 @@ const SignInPage: NextPage = () => {
 
   return (
     <>
-      <div className="w-1/2 m-auto mt-12">
-        <p className="font-bold text-3xl m-auto my-12">{isLogin ? "Log In To" : "Sign Up For"} GPTStudy</p>
+      <div className="max-w-3xl m-auto mt-12">
+        <p className="font-bold text-3xl m-auto my-12 text-center">{isLogin ? "Log In To" : "Sign Up For"} GPTStudy</p>
 
         <p className="font-semibold text-md m-auto mb-6 text-red-500">{errorMessage}</p>
 
