@@ -1,9 +1,11 @@
 # GPTStudy
 
 Generate study material with the GPT AI  
-Beta Testing Link: https://gpt-study.vercel.app/
 
-<img src="https://github.com/SumitNalavade/GPTStudy/blob/main/public/mobileHome.png?raw=true" width=20% height=20% > <img src="https://github.com/SumitNalavade/GPTStudy/blob/main/public/mobileCreate.png?raw=true" width=20% height=20% > <img src="https://github.com/SumitNalavade/GPTStudy/blob/main/public/mobileStudy.png?raw=true" width=20% height=20% > <img src="https://github.com/SumitNalavade/GPTStudy/blob/main/public/mobileUser.png?raw=true" width=20% height=20% >
+## Demo  
+https://gpt-study.vercel.app/
+## Screenshots  
+![App Screenshot](https://github.com/SumitNalavade/GPTStudy/blob/main/public/screenshots.png?raw=true)
 
 GPT Study is a groundbreaking web app that revolutionizes the way students study – akin to Quizlet but with a remarkable twist.  
 
